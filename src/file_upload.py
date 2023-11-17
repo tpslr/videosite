@@ -153,6 +153,14 @@ def create_error(message: str):
     return { "error": message }
 
 
-# TODO: check if the video id is already being used
+# returns True if video_id is used
+def is_id_used(video_id):
+    sql = text("SELECT 1 FROM videos WHERE id=:id")
+    return bool(db.session.execute(sql, { "id": video_id }))
+
 def generate_id():
-    return "".join([random.choice(ID_CHARACTERS) for i in range(5)])
+    id = ""
+    # loop until an id which is not being used is found
+    while not id or is_id_used(id):
+        id = "".join([random.choice(ID_CHARACTERS) for i in range(5)])
+    return id
