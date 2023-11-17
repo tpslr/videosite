@@ -55,7 +55,7 @@ def handle_upload(owner: int):
     # transcode the video
     # transcoding is important, as it saves space on the server by compressing files, 
     # and since the transcoded video is generated on the server, it should get rid of any trickery with the video metadata
-    transcode(owner, video_id, file_extension, file_name)
+    transcode(owner, video_id, file_name)
 
     return { "video_id": video_id }
 
