@@ -156,7 +156,7 @@ def create_error(message: str):
 # returns True if video_id is used
 def is_id_used(video_id):
     sql = text("SELECT 1 FROM videos WHERE id=:id")
-    return bool(db.session.execute(sql, { "id": video_id }))
+    return bool(db.session.execute(sql, { "id": video_id }).fetchone())
 
 def generate_id():
     id = ""
