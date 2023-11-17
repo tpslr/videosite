@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, render_template
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from src import file_upload, auth
@@ -6,7 +6,10 @@ from os import environ
 
 load_dotenv()
 
-app = Flask(__name__)
+
+SITE_NAME = environ.get("SITE_NAME") or __name__
+
+app = Flask(SITE_NAME)
 app.config["SQLALCHEMY_DATABASE_URI"] = environ.get("SQLALCHEMY_DATABASE_URI")
 app.secret_key = environ.get("FLASK_SECRET_KEY")
 
@@ -23,7 +26,7 @@ file_upload.db = db
 
 @app.route("/")
 def index():
-    return "test"
+    return render_template("index.html", title=SITE_NAME)
 
 
 @app.route("/api/getsession")

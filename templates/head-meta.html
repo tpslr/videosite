@@ -1,0 +1,55 @@
+<title>{{ title }}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Open Sans from google fonts -->
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+<style> 
+    body {
+        margin: 0;
+        background-color: #101020;
+        --ui-highlight: #0080ff;
+        --ui-background: #202025;
+        --text-color: whitesmoke;
+        font-family: 'Open Sans', sans-serif;
+        color: var(--text-color);
+    }
+    @media (prefers-color-scheme: light) {
+        body {
+            /* blinding white */
+            background-color: #ffffff;
+            /* slightly less blinding white */
+            --ui-background: #e0e0e0;
+            --text-color: #202020;
+        }
+    }
+    header {
+        background-color: var(--ui-background);
+    }
+    header > a {
+        color: var(--text-color);
+        text-decoration: none;
+        display: inline-block;
+        width: fit-content;
+    }
+    header > a > h1 {
+        padding: 10px;
+        margin: 0;
+        font-weight: normal;
+        line-height: 1;
+        width: fit-content;
+    }
+    .header-username {
+        float: right;
+        padding: 10px;
+        line-height: 1;
+    }
+    #header-anonymous {
+        color: color-mix(in srgb, var(--text-color) 50%, var(--ui-background));
+        font-size: 70%;
+        display: none;
+    }
+    #header-username {
+
+    }
+</style>
