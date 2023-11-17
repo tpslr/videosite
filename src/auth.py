@@ -69,7 +69,7 @@ def get_session(refresh_token):
         session.refresh_token = login_anonymous(user)
         return session
     
-    uid = db.session.execute(text("SELECT uid FROM tokens WHERE token=:token;"), { "token": refresh_token }).mappings().fetchone()
+    uid = db.session.execute(text("SELECT uid FROM tokens WHERE token=:token;"), { "token": refresh_token }).fetchone()[0]
     if not uid:
         # if no uid was returned from the db, this means the refresh token didn't exist
         return AuthError("Invalid refresh token.")
