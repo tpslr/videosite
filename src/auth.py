@@ -74,12 +74,12 @@ def get_session(refresh_token):
         session.refresh = login_anonymous(user)
         return session
     
-    uid = db.session.execute(text("SELECT uid FROM tokens WHERE token=:token;"), { "token": refresh_token }).fetchone()[0]
-    if not uid:
-        # if no uid was returned from the db, this means the refresh token didn't exist
+    result = db.session.execute(text("SELECT uid FROM tokens WHERE token=:token;"), { "token": refresh_token }).fetchone()
+    if not result or len(result) < 1:
+        # if no result was returned from the db, this means the refresh token didn't exist
         return AuthError("Invalid refresh token.")
     
-    user = get_user(uid)
+    user = get_user(result[0])
     if not user:
         # this should never happen, if the session was valid the user should also be valid
         return AuthError("User not found.")

@@ -33,8 +33,8 @@ def index():
 def get_session():
     refresh_token = request.headers.get("Authorization")
     session = auth.get_session(refresh_token)
-    if session is auth.AuthError:
-        return { "error": auth.AuthError }, 401
+    if type(session) is auth.AuthError:
+        return { "error": session }, 401
     
     body = { "user": session.user }
     if session.refresh:
