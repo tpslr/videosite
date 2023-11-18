@@ -101,8 +101,8 @@ def after_transcode(video_id: str):
         sql = text("INSERT INTO videos (id, owner, duration, private) VALUES (:id, :owner, :duration, :private)")
         duration = transcode_progresses[video_id].duration
         owner = transcode_progresses[video_id].owner
-        sql.bindparams(id=video_id, owner=owner, duration=duration, private=False)
-        db.session.execute(sql)
+        db.session.execute(sql, { "id": video_id, "owner": owner, "duration": duration, "private": False })
+        db.session.commit()
     except:
         cleanup_failed(video_id)
 
