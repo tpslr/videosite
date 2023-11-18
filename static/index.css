@@ -1,0 +1,32 @@
+#anonymous-warning {
+    background-color: rgb(212, 62, 62);
+    text-align: center;
+    color: black;
+    position: relative;
+    display: none;
+}
+#anonymous-warning a, #anonymous-warning a:visited {
+    color: #222771;
+}
+#anonymous-warning > svg, #anonymous-warning > input[type=checkbox] {
+    position: absolute;
+    right: 0; 
+    top: 0;
+    height: calc(100% - 0.6em);
+    aspect-ratio: 1/1;
+    padding: 0.3em;
+}
+#anonymous-warning > input[type=checkbox] {
+    cursor: pointer;
+    opacity: 0;
+}
+#anonymous-warning:has(> input:checked) {
+    display: none;
+}
+#anonymous-warning > label {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0; 
+    top: 0;
+}
