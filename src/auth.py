@@ -99,7 +99,7 @@ def get_user(uid: int):
     if uid in user_cache:
         return user_cache[uid]
     
-    user_data = db.session.execute(text("SELECT (type, username) FROM users WHERE uid=:uid;"), { "uid": uid }).mappings().fetchone()
+    user_data = db.session.execute(text("SELECT type, username FROM users WHERE uid=:uid;"), { "uid": uid }).mappings().fetchone()
     if not user_data:
         return None
     
