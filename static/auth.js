@@ -3,7 +3,8 @@
  * @typedef { { message: string } } AuthError
  * @typedef { "anonymous" | "normal" | "admin" } UserType
  * @typedef { { uid: number, type: UserType, username: string } } User
- * @typedef { { user: User, refresh_token?: string } | { error: AuthError } } GetSessionResponse
+ * @typedef { { token: string, expires: number } } AnonymousRefresh
+ * @typedef { { user: User, refresh?: AnonymousRefresh } | { error: AuthError } } GetSessionResponse
  */
 
 async function getSession(retry /**@type {number}*/ = 0) {
@@ -18,15 +19,16 @@ async function getSession(retry /**@type {number}*/ = 0) {
 
         /** @type { GetSessionResponse } */
         const result = await (await fetch("/api/getsession", { headers })).json()
-        if (result.error) {
+        if ('error' in result) {
             // auth error, delete refresh token and retry
             localStorage.removeItem("refresh-token")
             return getSession(retry + 1);
         }
-        if (result.refresh_token) {
+        if (result.refresh) {
             // result includes a refresh token, so remember it
             // this only happens for anonymous sessions
-            localStorage.setItem("refresh-token", result.refresh_token);
+            localStorage.setItem("refresh-token", result.refresh.token);
+            localStorage.setItem("refresh-expires", result.refresh.expires);
         }
         // set the user on window so it's accessible everywhere
         window.user = result.user;

@@ -7,7 +7,7 @@ from sqlalchemy import text
 from secrets import token_urlsafe
 from enum import Enum
 from random_username.generate import generate_username
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from os import environ
 from functools import wraps
 
@@ -29,7 +29,12 @@ class User:
 class Session:
     user: User
     session_token: str
-    refresh_token: Optional[str] = None
+    refresh: Optional[AnonymousRefresh] = None
+
+@dataclass
+class AnonymousRefresh:
+    token: str
+    expires: int
 
 @dataclass
 class AuthError:
@@ -66,7 +71,7 @@ def get_session(refresh_token):
         user = create_anonymous_user()
         session = create_session(user)
         # only anonymous sessions return refresh token with get_session
-        session.refresh_token = login_anonymous(user)
+        session.refresh = login_anonymous(user)
         return session
     
     uid = db.session.execute(text("SELECT uid FROM tokens WHERE token=:token;"), { "token": refresh_token }).fetchone()[0]
@@ -111,11 +116,14 @@ def get_user(uid: int):
 def login_anonymous(user: User):
     if user.type != UserType.anonymous:
         raise ValueError("Tried to anonymous login a non-anonymous user.")
+    
     refresh_token = token_urlsafe(32)
-    expires = (datetime.utcnow() + timedelta(days=ANONYMOUS_EXPIRY_DAYS)).strftime('%Y-%m-%d %H:%M:%S')
-    db.session.execute(text("INSERT INTO tokens (uid, token, expires) VALUES (:uid, :token, :expires);"), { "uid": user.uid, "token": refresh_token, "expires": expires })
+    expires = datetime.now(timezone.utc) + timedelta(days=ANONYMOUS_EXPIRY_DAYS)
+
+    sql = text("INSERT INTO tokens (uid, token, expires) VALUES (:uid, :token, :expires);")
+    db.session.execute(sql, { "uid": user.uid, "token": refresh_token, "expires": expires })
     db.session.commit()
-    return refresh_token
+    return AnonymousRefresh(refresh_token, int(expires.timestamp() * 1000))
 
 def create_anonymous_user():
     username = ""
