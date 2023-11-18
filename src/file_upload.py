@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from time import sleep
 import ffmpeg
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
@@ -104,6 +105,8 @@ def after_transcode(video_id: str):
         db.session.execute(sql, { "id": video_id, "owner": owner, "duration": duration, "private": False })
         db.session.commit()
     except:
+        # sleep for a bit in case ffmpeg still has the file in use
+        sleep(0.5)
         cleanup_failed(video_id)
 
 
