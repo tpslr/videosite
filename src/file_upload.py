@@ -86,7 +86,7 @@ def transcode(owner: int, video_id: str, file_name: str):
     transcode_progresses[video_id] = TranscodeProgress(owner, video_duration, 0)
     ( # transcode video, reporting progress to http://localhost:5000/setprogress/{video_id}
         ffmpeg.input(input_video)
-        .output(output_video, maxrate="1500k", progress=f"http://localhost:5000/setprogress/{video_id}", movflags="faststart")
+        .output(output_video, maxrate="1500k", progress=f"http://localhost:5000/api/setprogress/{video_id}", movflags="faststart")
         .run_async(overwrite_output=True, quiet=True)
     )
     ( # generate thumbnail
