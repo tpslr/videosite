@@ -37,8 +37,8 @@ def get_session():
         return { "error": auth.AuthError }, 401
     
     body = { "user": session.user }
-    if session.refresh_token:
-        body["refresh_token"] = session.refresh_token
+    if session.refresh:
+        body["refresh"] = session.refresh
     
     response = make_response(body)
     response.set_cookie("session", session.session_token, secure=not IS_DEV, httponly=True, samesite="Strict")
