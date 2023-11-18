@@ -1,5 +1,3 @@
-// wrap the entire script in an async functio to be able to use await
-(async () => {
 // some typedef
 /**
  * @typedef { { message: string } } AuthError
@@ -7,6 +5,7 @@
  * @typedef { { uid: number, type: UserType, username: string } } User
  * @typedef { { user: User, refresh_token?: string } | { error: AuthError } } GetSessionResponse
  */
+
 async function getSession(retry /**@type {number}*/ = 0) {
     // only retry twice
     if (retry > 2) return;
@@ -36,7 +35,6 @@ async function getSession(retry /**@type {number}*/ = 0) {
         getSession(retry + 1)
     }
 }
-await getSession();
 
 async function init() {
     if (document.readyState != 'complete') return;
@@ -49,7 +47,9 @@ async function init() {
     document.getElementById("header-anonymous").style.display = (user.type == "anonymous") ? "inline" : "none";
 }
 
-document.onreadystatechange = init;
-init();
-
+(async () => {
+    // run everything in an async function to be able to use awaits
+    await getSession();
+    document.onreadystatechange = init;
+    init();
 })()
