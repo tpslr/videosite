@@ -21,5 +21,39 @@
         <input type="checkbox" id="close-anonymous-warning">
         <label for="close-anonymous-warning">Close</label>
     </div>
+    
+    <section id="user-videos" class="videos">
+        <div id="uploadbar" class="centerX">
+            <input type="file" id="file" style="display: none;"/>
+            <button onclick="document.getElementById('file').click();" class="uibutton uploadbutton">Upload</button>
+        </div>
+    </section>
+    <section id="public-videos" class="videos">
+
+    </section>
+    <template id="videotemplate">
+        <div class="videobox">
+            <div class="video">
+                <div class="thumbwrap" onclick="">
+                    <img src="https://wallpaperswide.com/download/cat_close_up_3-wallpaper-2560x1440.jpg" class="thumb">
+                    <div class="play"></div>
+                </div>
+                <div class="center progress-wrp">
+                    <div class="centerX progress-text">Uploading...</div>
+                    <div class="progress-bar"></div>
+                    <div class="progress-status">0%</div>
+                </div>
+            </div>
+            <div class="videoinfo">
+                <span class="title">Video title</span>
+                <div class="spacer"></div>
+                <div class="videobuttons">
+                    <a class="link" href="/v/">video link</a>
+                    <button class="uibutton smallbutton redbutton">Delete</button>
+                    <button class="uibutton smallbutton" style="width: 70px; white-space: nowrap;">Copy Link</button>
+                </div>
+            </div>
+        </div>
+    </template>
 </body>
 </html>

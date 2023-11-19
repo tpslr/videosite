@@ -30,3 +30,222 @@
     right: 0; 
     top: 0;
 }
+
+.centerX {
+    width: fit-content;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.centerY {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+div.center {
+    width: fit-content;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.largetext {
+    pointer-events: none;
+    font-size: 80px;
+}
+section.videos {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(6, 400px);
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+}
+
+div#uploadbar {
+    grid-column: 1/7;
+    background-color: #202025;
+    padding: 10px;
+    width: calc(100% - 20px);
+    line-height: 1;
+    border-radius: 5px;
+}
+.uploadbutton {
+    height: 30px;
+    width: 150px;
+}
+
+@media (max-width: 850px) {
+    section.videos {
+        grid-template-columns: repeat(1, 400px);
+    }
+    div#uploadbar {
+        grid-column: 1/2;
+    }
+}
+@media (max-width: 1250px) and (min-width: 850px) {
+    section.videos {
+        grid-template-columns: repeat(2, 400px);
+    }
+    div#uploadbar {
+        grid-column: 1/3;
+    }
+}
+@media (max-width: 1650px) and (min-width: 1250px) {
+    section.videos {
+        grid-template-columns: repeat(3, 400px);
+    }
+    div#uploadbar {
+        grid-column: 1/4;
+    }
+}
+@media (max-width: 2050px) and (min-width: 1650px) {
+    section.videos {
+        grid-template-columns: repeat(4, 400px);
+    }
+    div#uploadbar {
+        grid-column: 1/5;
+    }
+}
+@media (max-width: 2450px) and (min-width: 2050px) {
+    section.videos {
+        grid-template-columns: repeat(5, 400px);
+    }
+    div#uploadbar {
+        grid-column: 1/6;
+    }
+}
+
+div.videobox {
+    --border-color: #292930;
+    background-color: #202025;
+    margin: 10px;
+    height: 290px;
+    border: var(--border-color) 1px solid;
+    position: relative;
+    display: grid;
+    grid-template-rows: 225px;
+    border-radius: 6px;
+
+}
+div.videobox > div.video {
+    border: var(--border-color) 1px solid;
+    border-bottom: var(--border-color) 2px solid;
+    background-color: #30303a;
+    position: relative;
+    user-select: none;
+    border-radius: 6px 6px 0 0;
+}
+div.videobox > div.videoinfo {
+    position: relative;
+    bottom: 0;
+    padding: 8px;
+    margin-left: 2px;
+}
+
+.progress-wrp {
+    padding: 1px;
+    height: 10px;
+    border-radius: 5px;
+    position: absolute !important;
+    width: calc(100% - 50px) !important;
+    text-align: left;
+    background: #202025;
+}
+.progress-wrp > .progress-text {
+    color: var(--text-color);
+    position: absolute;
+    bottom: calc(50% + 15px);
+}
+.progress-wrp > .progress-bar {
+    height: 100%;
+    border-radius: 5px;
+    background-color: var(--ui-highlight);
+    width: 0%;
+    box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.11);
+    transition: width 0.8s linear;
+}
+.progress-wrp > .progress-status {
+    color: var(--text-color);
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    display: inline-block;
+}
+
+div.thumbwrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+div.thumbwrap div.play {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    opacity: 0;
+    width: 0; 
+    height: 0; 
+    border-top: 35px solid transparent;
+    border-bottom: 35px solid transparent;
+    border-left: 60px solid rgb(255, 255, 255);
+}
+div.thumbwrap:hover div.play {
+    opacity: 0.8;
+}
+img.thumb {
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+span.title {
+    height: 20px;
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+div.videobuttons {
+    position: absolute;
+    padding: inherit;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+a.link {
+    color: var(--ui-highlight) !important;
+    font-size: 0.8em;
+    line-height: 1;
+    float: inline-start;
+}
+.uibutton {
+    border-radius: 3px;
+    border: none;
+    outline: none!important;
+    background-color: var(--ui-highlight);
+    transition: filter 0.1s linear;
+    user-select: none;
+}
+.uibutton:hover {
+    filter: brightness(0.90);
+}
+.uibutton:active {
+    filter: brightness(0.85);
+}
+button.smallbutton {
+    font-size: 0.8em;
+    float: right;
+    margin-left: 4px;
+}
+button.greenbutton {
+    background-color: #03c04a;
+    animation: fadeback 0.5s linear 0.5s forwards;
+}
+button.redbutton {
+    background-color: #d0312d;
+}
