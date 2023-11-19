@@ -1,6 +1,3 @@
-/** @type { User } */
-const user = window.user
-
 async function showAnonymousWarning() {
     const expires = localStorage.getItem("refresh-expires");
     const lastWarning = localStorage.getItem("last-anonymous-warning");
@@ -29,7 +26,13 @@ function getRelativeDate(/** @type {number} */ timestamp) {
 }
 
 
+(async () => {
+    // wait until auth has gotten a user (i know this is a dumb way but it works)
+    while (!window.user) await new Promise(resolve => setTimeout(resolve, 500));
+    /** @type { import("./auth.js").User } */
+    const user = window.user
 
-if (user.type == "anonymous") {
-    showAnonymousWarning();
-}
+    if (user.type == "anonymous") {
+        showAnonymousWarning();
+    }
+})()
