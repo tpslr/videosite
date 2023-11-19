@@ -85,8 +85,9 @@ class Upload {
             if (response.error) {
                 return showError(response.error.message);
             }
-            //this.videoDiv.querySelector("a.link").innerText = document.location.origin + "/v/" + response.video_id;
-            //this.videoDiv.querySelector("a.link").href = document.location.origin + "/v/" + response.video_id;
+            this.videoDiv.querySelector("img.thumb").src = `/video_data/${response.video_id}/thumbnail-lowres.png`;
+            this.videoDiv.querySelector("a.link").innerText = `${document.location.origin}/v/${response.video_id}`
+            this.videoDiv.querySelector("a.link").href = `${document.location.origin}/v/${response.video_id}`
             while (true) {
                 const res = await (await fetch(`/api/progress/${response.video_id}`)).json();
                 if (res.error) {
@@ -129,7 +130,7 @@ async function loadVideos(/**@type {boolean}*/ public) {
         for (const video of response.videos) {
             const videoDiv = document.getElementById("videotemplate").content.cloneNode(true).querySelector("div.videobox");
             videoDiv.querySelector("div.progress-wrp").style.display = "none";
-            videoDiv.querySelector("img.thumb").src = `/video_data/${video.id}/thumbnail.png`;
+            videoDiv.querySelector("img.thumb").src = `/video_data/${video.id}/thumbnail-lowres.png`;
             videoDiv.querySelector("span.title").innerText = video.title;
             videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
             videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;

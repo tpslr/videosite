@@ -82,6 +82,7 @@ def transcode(owner: int, video_id: str, file_name: str, title: str):
     input_video = os.path.join(VIDEO_FOLDER, video_id, file_name)
     output_video = os.path.join(VIDEO_FOLDER, video_id, f"compressed.mp4")
     output_thumbnail = os.path.join(VIDEO_FOLDER, video_id, f"thumbnail.png")
+    output_thumbnail_lowres = os.path.join(VIDEO_FOLDER, video_id, f"thumbnail-lowres.png")
 
     # initialize a TranscodeProgress object for this transcode
     video_duration = get_video_duration(input_video)
@@ -95,6 +96,11 @@ def transcode(owner: int, video_id: str, file_name: str, title: str):
         ffmpeg.input(input_video)
         .output(output_thumbnail, vf="thumbnail", frames=1)
         .run_async(overwrite_output=True, quiet=True)
+    )
+    ( # generate low resolution thumbnail
+        ffmpeg.input(input_video)
+        .output(output_thumbnail_lowres, vf="thumbnail", s="376x222", frames=1)
+        .run(overwrite_output=True, quiet=True)
     )
 
 # ran after transcoding video
