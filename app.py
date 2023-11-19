@@ -1,11 +1,11 @@
-from flask import Flask, request, make_response, render_template, send_from_directory
 from dotenv import load_dotenv
+load_dotenv()
+from flask import Flask, request, make_response, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from src import file_upload, auth
 from os import environ
 
-load_dotenv()
 
 
 SITE_NAME = environ.get("SITE_NAME") or __name__
