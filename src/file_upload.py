@@ -24,6 +24,7 @@ db: SQLAlchemy = None
 @dataclass
 class TranscodeProgress:
     owner: int
+    title: str
     duration: float
     progress: float
 # dictionary from video id to transcode progress
@@ -56,7 +57,7 @@ def handle_upload(owner: int):
     # transcode the video
     # transcoding is important, as it saves space on the server by compressing files, 
     # and since the transcoded video is generated on the server, it should get rid of any trickery with the video metadata
-    transcode(owner, video_id, file_name)
+    transcode(owner, video_id, file_name, file.filename)
 
     return { "video_id": video_id }
 
@@ -77,14 +78,14 @@ def is_valid_video(file_path: str):
         return False
 
 
-def transcode(owner: int, video_id: str, file_name: str):
+def transcode(owner: int, video_id: str, file_name: str, title: str):
     input_video = os.path.join(VIDEO_FOLDER, video_id, file_name)
     output_video = os.path.join(VIDEO_FOLDER, video_id, f"compressed.mp4")
     output_thumbnail = os.path.join(VIDEO_FOLDER, video_id, f"thumbnail.png")
 
     # initialize a TranscodeProgress object for this transcode
     video_duration = get_video_duration(input_video)
-    transcode_progresses[video_id] = TranscodeProgress(owner, video_duration, 0)
+    transcode_progresses[video_id] = TranscodeProgress(owner, title, video_duration, 0)
     ( # transcode video, reporting progress to http://localhost:5000/setprogress/{video_id}
         ffmpeg.input(input_video)
         .output(output_video, maxrate="1500k", progress=f"http://localhost:5000/api/setprogress/{video_id}", movflags="faststart")
@@ -99,10 +100,11 @@ def transcode(owner: int, video_id: str, file_name: str):
 # ran after transcoding video
 def after_transcode(video_id: str):
     try:
-        sql = text("INSERT INTO videos (id, owner, duration, private) VALUES (:id, :owner, :duration, :private)")
+        sql = text("INSERT INTO videos (id, owner, title, duration, private) VALUES (:id, :owner, :title, :duration, :private)")
         duration = transcode_progresses[video_id].duration
         owner = transcode_progresses[video_id].owner
-        db.session.execute(sql, { "id": video_id, "owner": owner, "duration": duration, "private": False })
+        title = transcode_progresses[video_id].title
+        db.session.execute(sql, { "id": video_id, "owner": owner, "title": title, "duration": duration, "private": False })
         db.session.commit()
     except:
         # sleep for a bit in case ffmpeg still has the file in use

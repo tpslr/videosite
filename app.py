@@ -71,9 +71,9 @@ def videos(user: auth.User):
         return { "error": { "message": "missing arg offset" } }, 400
     
     if "public" in request.args:
-        sql = text("SELECT id, views, duration FROM videos WHERE owner!=:owner LIMIT(:limit) OFFSET(:offset*:limit);")
+        sql = text("SELECT id, views, duration, title FROM videos WHERE owner!=:owner LIMIT(:limit) OFFSET(:offset*:limit);")
     else:
-        sql = text("SELECT id, views, duration FROM videos WHERE owner=:owner AND private=false LIMIT(:limit) OFFSET(:offset*:limit);")
+        sql = text("SELECT id, views, duration, title FROM videos WHERE owner=:owner AND private=false LIMIT(:limit) OFFSET(:offset*:limit);")
     videos = db.session.execute(sql, { "owner": user.uid, "limit": limit, "offset": offset }).mappings().fetchall()
     videos = [dict(video) for video in videos]
     return { "base_url": BASE_URL, "videos": list(videos) }
