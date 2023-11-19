@@ -29,7 +29,7 @@ file_upload.db = db
 
 @app.route("/")
 def index():
-    return render_template("index.html", title=SITE_NAME)
+    return render_template("index.html", header_title=SITE_NAME, title=SITE_NAME)
 
 
 @app.route("/api/getsession")
@@ -90,6 +90,7 @@ def video_player(video_id: str):
         return "Not Found", 404
     
     return render_template("player.html", 
+                           header_title=SITE_NAME,
                            title=video["title"], 
                            views=video["views"],
                            video_url=f"{BASE_URL}/video_data/{video_id}/compressed.mp4",
