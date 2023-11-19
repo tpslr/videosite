@@ -112,6 +112,36 @@ class Upload {
     }
 }
 
+/**
+ * @typedef {{ id: string, duration: Number, views: Number }} Video
+ * @typedef {{ base_url: string, videos: Video[] } | { error: { message: string } }} VideosResponse
+ */
+
+async function loadVideos(/**@type {boolean}*/ public) {
+    /**@type {HTMLDivElement} */
+    try {
+        /**@type {VideosResponse}*/
+        const response = await (await fetch("/api/videos" + (public ? "?public" : ""))).json();
+        if ("error" in response) return showError(response.error.message);
+
+        const videosListElem = document.getElementById(public ? "public-videos" : "user-videos")
+
+        for (const video of response.videos) {
+            const videoDiv = document.getElementById("videotemplate").content.cloneNode(true).querySelector("div.videobox");
+            videoDiv.querySelector("div.progress-wrp").style.display = "none";
+            videoDiv.querySelector("img.thumb").src = `/video_data/${video.id}/thumbnail.png`;
+            videoDiv.querySelector("span.title").innerText = `Title`;
+            videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
+            videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
+
+            videosListElem.appendChild(videoDiv);
+        }
+    }
+    catch {
+        showError("unknown error");
+    }
+}
+
 
 (async () => {
     // wait until auth has gotten a user (i know this is a dumb way but it works)
@@ -127,4 +157,6 @@ class Upload {
         if (!upload.valid) return;
         upload.send();
     }
+    loadVideos(false);
+    loadVideos(true);
 })()
