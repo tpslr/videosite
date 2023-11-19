@@ -1,6 +1,7 @@
 from flask import Flask, request, make_response, render_template
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 from src import file_upload, auth
 from os import environ
 
@@ -8,6 +9,7 @@ load_dotenv()
 
 
 SITE_NAME = environ.get("SITE_NAME") or __name__
+BASE_URL = environ.get("BASE_URL") or "http://localhost:5000"
 
 app = Flask(SITE_NAME)
 app.config["SQLALCHEMY_DATABASE_URI"] = environ.get("SQLALCHEMY_DATABASE_URI")
@@ -53,6 +55,26 @@ def upload(user: auth.User):
 def progress(video_id):
     return file_upload.get_transcode_progress(video_id)
 
+@app.route("/api/videos")
+@auth.requires_auth()
+def videos(user: auth.User):
+    limit = request.args["limit"] if "limit" in request.args else "20"
+    offset = request.args["offset"] if "offset" in request.args else "0"
+    try:
+        limit = int(limit)
+    except:
+        return "missing arg limit", 400
+    try:
+        offset = int(offset)
+    except:
+        return "missing arg offset", 400
+    if "public" in request.args:
+        sql = text("SELECT id, views, duration FROM videos WHERE owner!=:owner LIMIT(:limit) OFFSET(:offset*:limit);")
+    else:
+        sql = text("SELECT id, views, duration FROM videos WHERE owner=:owner AND private=f LIMIT(:limit) OFFSET(:offset*:limit);")
+    videos = db.session.execute(sql, { "owner": user.uid, "limit": limit, "offset": offset }).mappings().fetchall()
+    videos = [dict(video) for video in videos]
+    return { "base_url": BASE_URL, "videos": list(videos) }
 
 @app.route("/api/setprogress/<video_id>", methods=["POST"])
 # this route is only accessible to localhost, for ffmpeg to report back transcode progress
