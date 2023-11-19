@@ -114,7 +114,7 @@ class Upload {
 }
 
 /**
- * @typedef {{ id: string, title: string, duration: Number, views: Number }} Video
+ * @typedef {{ id: string, title: string, owner: string, duration: Number, views: Number }} Video
  * @typedef {{ base_url: string, videos: Video[] } | { error: { message: string } }} VideosResponse
  */
 
@@ -132,8 +132,15 @@ async function loadVideos(/**@type {boolean}*/ public) {
             videoDiv.querySelector("div.progress-wrp").style.display = "none";
             videoDiv.querySelector("img.thumb").src = `/video_data/${video.id}/thumbnail-lowres.png`;
             videoDiv.querySelector("span.title").innerText = video.title;
-            videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
-            videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
+            if (public) {
+                videoDiv.querySelector("a.link").style.display = "none";
+                videoDiv.querySelector("span.owner").style.display = "unset";
+                videoDiv.querySelector("span.owner").innerText = video.owner;
+            }
+            else {
+                videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
+                videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
+            }
             videoDiv.querySelector("div.video").onclick = () => { document.location = `${response.base_url}/v/${video.id}`; }
             videoDiv.querySelector("button.copybutton").onclick = async (/**@type {PointerEvent}*/ event) => { 
                 try {

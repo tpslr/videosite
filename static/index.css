@@ -223,6 +223,11 @@ a.link {
     line-height: 1;
     float: inline-start;
 }
+span.owner {
+    font-size: 0.8em;
+    line-height: 1;
+    float: inline-start;
+}
 .uibutton {
     border-radius: 3px;
     border: none;
