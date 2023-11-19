@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, render_template
+from flask import Flask, request, make_response, render_template, send_from_directory
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
@@ -10,6 +10,7 @@ load_dotenv()
 
 SITE_NAME = environ.get("SITE_NAME") or __name__
 BASE_URL = environ.get("BASE_URL") or "http://localhost:5000"
+VIDEO_FOLDER = environ.get("VIDEO_FOLDER")
 
 app = Flask(SITE_NAME)
 app.config["SQLALCHEMY_DATABASE_URI"] = environ.get("SQLALCHEMY_DATABASE_URI")
@@ -76,6 +77,10 @@ def videos(user: auth.User):
     videos = db.session.execute(sql, { "owner": user.uid, "limit": limit, "offset": offset }).mappings().fetchall()
     videos = [dict(video) for video in videos]
     return { "base_url": BASE_URL, "videos": list(videos) }
+
+@app.route('/video_data/<path:filename>')
+def video_data(filename):
+    return send_from_directory(VIDEO_FOLDER, filename)
 
 @app.route("/api/setprogress/<video_id>", methods=["POST"])
 # this route is only accessible to localhost, for ffmpeg to report back transcode progress
