@@ -134,7 +134,7 @@ async function loadVideos(/**@type {boolean}*/ public) {
             videoDiv.querySelector("span.title").innerText = video.title;
             videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
             videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
-
+            videoDiv.querySelector("div.video").onclick = () => { document.location = `${response.base_url}/v/${video.id}`; }
             videosListElem.appendChild(videoDiv);
         }
     }
