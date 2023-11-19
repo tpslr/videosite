@@ -135,6 +135,20 @@ async function loadVideos(/**@type {boolean}*/ public) {
             videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
             videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
             videoDiv.querySelector("div.video").onclick = () => { document.location = `${response.base_url}/v/${video.id}`; }
+            videoDiv.querySelector("button.copybutton").onclick = async (/**@type {PointerEvent}*/ event) => { 
+                try {
+                    await navigator.clipboard.writeText(`${response.base_url}/v/${video.id}`)
+                    event.target.classList.add("greenbutton");
+                    event.target.innerText = "Copied!";
+                    setTimeout(() => {
+                        event.target.classList.remove("greenbutton");
+                        event.target.innerText = "Copy Link";
+                    }, 1000);
+                }
+                catch {
+                    showError("Failed to copy, most likely browser disallows clipboard.");
+                }
+            }
             videosListElem.appendChild(videoDiv);
         }
     }

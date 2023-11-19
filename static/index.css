@@ -242,6 +242,10 @@ button.smallbutton {
     float: right;
     margin-left: 4px;
 }
+@keyframes fadeback {
+    0% { background-color: #03c04a; }
+    100% { background-color: var(--ui-highlight); }
+}
 button.greenbutton {
     background-color: #03c04a;
     animation: fadeback 0.5s linear 0.5s forwards;
