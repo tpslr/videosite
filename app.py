@@ -84,9 +84,14 @@ def video_data(filename):
 
 @app.route("/v/<video_id>")
 def video_player(video_id: str):
-
+    sql = text("SELECT id, views, duration, title FROM videos WHERE id=:id")
+    video = db.session.execute(sql, { "id": video_id }).mappings().fetchone()
+    if not video:
+        return "Not Found", 404
+    
     return render_template("player.html", 
-                           title="Title", 
+                           title=video["title"], 
+                           views=video["views"],
                            video_url=f"{BASE_URL}/video_data/{video_id}/compressed.mp4",
                            thumbnail_url=f"{BASE_URL}/video_data/{video_id}/thumbnail.png")
 
