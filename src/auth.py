@@ -10,14 +10,21 @@ from random_username.generate import generate_username
 from datetime import datetime, timedelta, timezone
 from os import environ
 from functools import wraps
+from redis import Redis
 
 db: SQLAlchemy = None
+
 
 sessions: dict[str, Session] = {}
 
 user_cache: dict[int, User] = {}
 
 ANONYMOUS_EXPIRY_DAYS = float(environ.get("ANONYMOUS_EXPIRY_DAYS"))    
+IS_DEV = environ.get("ENVIRONMENT") == "dev"
+
+if not IS_DEV:
+    redis = Redis()
+    redis.select(1)
 
 @dataclass
 class User:
@@ -55,6 +62,10 @@ def requires_auth():
             
             session_token = request.cookies.get("session")
 
+            if session_token not in sessions:
+                # if session token isn't cached, try to load session from redis
+                session_from_redis(session_token)
+
             # checks the session token for validity
             if session_token not in sessions:
                 return "Unauthorized", 401
@@ -64,6 +75,15 @@ def requires_auth():
             return f(user, *args, **kwargs)
         return __requires_auth
     return _requires_auth
+
+# loads session data from redis
+def session_from_redis(session_token):
+    if IS_DEV: return # redis isn't used in dev environment
+    uid = redis.get(session_token)
+    if not uid: return
+    user = get_user(int(uid))
+    if not user: return
+    sessions[session_token] = Session(user, session_token)
 
 # returns a user session if provided with the correct refresh token, if no 
 def get_session(refresh_token):
@@ -97,6 +117,8 @@ def create_session(user: User):
     token = token_urlsafe(32)
     session = Session(user, token)
     sessions[token] = session
+    if not IS_DEV:
+        redis.mset({ token: user.uid })
     return session
 
 # loads a user from cache or db by user id
