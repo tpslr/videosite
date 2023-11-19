@@ -82,6 +82,14 @@ def videos(user: auth.User):
 def video_data(filename):
     return send_from_directory(VIDEO_FOLDER, filename)
 
+@app.route("/v/<video_id>")
+def video_player(video_id: str):
+
+    return render_template("player.html", 
+                           title="Title", 
+                           video_url=f"{BASE_URL}/video_data/{video_id}/compressed.mp4",
+                           thumbnail_url=f"{BASE_URL}/video_data/{video_id}/thumbnail.png")
+
 @app.route("/api/setprogress/<video_id>", methods=["POST"])
 # this route is only accessible to localhost, for ffmpeg to report back transcode progress
 def set_progress(video_id):
