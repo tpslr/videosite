@@ -1,6 +1,7 @@
 # Videonjakosivu
 
 Sivulle voi nopeasti ladata videon, ja jakaa videon linkin jonnekkin, jolla muut voivat katsoa sen
+Sivu on saatavilla osoitteessa [videosite.topias.xyz](https://videosite.topias.xyz)
 
 ## Ominaisuudet
 * Käyttäjä voi ladata sivulle videon
@@ -12,3 +13,23 @@ Sivulle voi nopeasti ladata videon, ja jakaa videon linkin jonnekkin, jolla muut
 * Kirjautuneet käyttäjät voivat jättää videoihin kommentteja ja tykkäyksiä
 * Ylläpitäjät voivat nähdä listan kaikista videoista ja poistaa muiden käyttäjien videoita
 * Käyttäjät voivat reporttaa videon ja ylläpitäjät voivat lukea nämä reportit ja tarkastaa videon
+
+
+## Toimivat ominaisuudet
+* Käyttäjä voi ladata sivulle videon
+* Videot katsottavissa
+* Lista videoista näkyy
+* Sivua voi käyttää kirjautumatta
+
+
+## Puuttuvat ominaisuudet
+* Käyttäjän luonti
+* Yksityiset videot
+* Tykkäykset ja kommentit
+* Ylläpitäjät
+* Videoiden reportit
+* Videoiden poistaminen
+
+## Ongelmat
+* ohjelma käyttää pythonissa globaaleita arvoja muistamaan sessiot ja videoiden transcoden etenemisen, tämä ei toimi oikein jos wsgi-workereitä on enemmän kuin yksi, joten sivu saattaa toimia tällä hetkellä hitaasti 
+* käyttöliittymässä jotkin napit ja muut eivät toimi oikein
