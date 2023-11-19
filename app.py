@@ -63,11 +63,12 @@ def videos(user: auth.User):
     try:
         limit = int(limit)
     except:
-        return "missing arg limit", 400
+        return { "error": { "message": "missing arg limit" } }, 400
     try:
         offset = int(offset)
     except:
-        return "missing arg offset", 400
+        return { "error": { "message": "missing arg offset" } }, 400
+    
     if "public" in request.args:
         sql = text("SELECT id, views, duration FROM videos WHERE owner!=:owner LIMIT(:limit) OFFSET(:offset*:limit);")
     else:
