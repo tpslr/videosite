@@ -78,7 +78,7 @@ def videos(user: auth.User):
     videos = [dict(video) for video in videos]
     return { "base_url": BASE_URL, "videos": list(videos) }
 
-@app.route('/video_data/<path:filename>')
+@app.route("/video_data/<path:filename>")
 def video_data(filename):
     return send_from_directory(VIDEO_FOLDER, filename)
 
