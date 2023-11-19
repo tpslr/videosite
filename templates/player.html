@@ -1,5 +1,5 @@
 <head>
-    <title>TITLE</title>
+    {% include "head-meta.html" %}
     <meta property="og.title" content="{{ title }}"/>
     <meta name="twitter:card" content="player">
     <meta property="og.type" content="video.other"/>
@@ -18,14 +18,13 @@
             color: whitesmoke;
         }
         div.center {
-            position: absolute;
-            left: 50%;
-            top: 20px;
-            transform: translateX(-50%);
+            margin: 20px auto 0px auto;
+            width: fit-content;
         }
     </style>
 </head>
 <body>
+    {% include "header.html" %}
     <div class="center">
         <video src="{{ video_url }}" poster="{{ thumbnail_url }}" controls style="width: 800px;"></video>
         <h2 style="position: relative; top: -10px; left: 10px;">{{ title }}<h2>
