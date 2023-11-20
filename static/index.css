@@ -258,3 +258,15 @@ button.greenbutton {
 button.redbutton {
     background-color: #d0312d;
 }
+
+#dropfile {
+    opacity: 0.9;
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 99999;
+    background: #101020;
+}

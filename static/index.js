@@ -164,6 +164,11 @@ async function loadVideos(/**@type {boolean}*/ public) {
     }
 }
 
+function allowDrag(e) {
+    e.dataTransfer.dropEffect = 'copy';
+    e.preventDefault();
+}
+
 
 (async () => {
     // wait until auth has gotten a user (i know this is a dumb way but it works)
@@ -181,4 +186,23 @@ async function loadVideos(/**@type {boolean}*/ public) {
     }
     loadVideos(false);
     loadVideos(true);
+
+    const dropfile = document.getElementById('dropfile');
+
+    window.addEventListener('dragenter', function(e) {
+        dropfile.style.display = "block";
+    });
+    dropfile.addEventListener('dragenter', allowDrag);
+    dropfile.addEventListener('dragover', allowDrag);
+    dropfile.addEventListener('dragleave', function(e) {
+        console.log('dragleave');
+        dropfile.style.display = "none";
+    });
+    dropfile.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropfile.style.display = "none";
+        const upload = new Upload(e.dataTransfer.files[0]);
+        if (!upload.valid) return;
+        upload.send();
+    });
 })()
