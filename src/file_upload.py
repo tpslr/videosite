@@ -95,7 +95,7 @@ def transcode(owner: int, video_id: str, file_name: str, title: str):
     video_duration = get_video_duration(input_video)
     transcode_progress = TranscodeProgress(owner, title, video_duration, 0)
     if IS_DEV:
-        transcode_progresses[video_id] = transcode_progresses
+        transcode_progresses[video_id] = transcode_progress
     else:
         save_transcode_progress_redis(video_id, transcode_progress)
     
@@ -137,7 +137,7 @@ def after_transcode(video_id: str):
 def get_video_duration(file_path: str):
     try:
         return float(subprocess.check_output(["ffprobe", "-select_streams", "v:0", "-show_entries", "stream=duration", "-of", "csv=p=0", "-v", "error", file_path], stderr=subprocess.PIPE))
-    except ValueError:
+    except:
         # .mkv and some other types don't have stream duration so have to check format duration
         return float(subprocess.check_output(["ffprobe", "-select_streams", "v:0", "-show_entries", "format=duration", "-of", "csv=p=0", "-v", "error", file_path], stderr=subprocess.PIPE))
 
