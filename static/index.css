@@ -65,7 +65,7 @@ section.videos {
 
 div#uploadbar {
     grid-column: 1/7;
-    background-color: #202025;
+    background-color: var(--ui-background);
     padding: 10px;
     width: calc(100% - 20px);
     line-height: 1;
@@ -119,7 +119,7 @@ div#uploadbar {
 
 div.videobox {
     --border-color: #292930;
-    background-color: #202025;
+    background-color: var(--ui-background);
     margin: 10px;
     height: 290px;
     border: var(--border-color) 1px solid;
