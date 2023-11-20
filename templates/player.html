@@ -42,7 +42,8 @@
     {% include "header.html" %}
     <div class="center">
         <video src="{{ video_url }}" poster="{{ thumbnail_url }}" controls style="width: 800px;"></video>
-        <h2 style="position: relative; top: -10px; left: 10px;">{{ title }}<h2>
+        <h2 style="position: relative; margin: 10px;">{{ title }}</h2>
+        <span style="margin-left: 10px;">{{ views }} views</span>
     </div>
 </body>
 </html>
