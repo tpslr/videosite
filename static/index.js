@@ -88,6 +88,7 @@ class Upload {
             this.videoDiv.querySelector("img.thumb").src = `/video_data/${response.video_id}/thumbnail-lowres.png`;
             this.videoDiv.querySelector("a.link").innerText = `${document.location.origin}/v/${response.video_id}`
             this.videoDiv.querySelector("a.link").href = `${document.location.origin}/v/${response.video_id}`
+            this.videoDiv.querySelector("button.copybutton").onclick = event => copyLink(event, `${document.location.origin}/v/${response.video_id}`)
             while (true) {
                 const res = await (await fetch(`/api/progress/${response.video_id}`)).json();
                 if (res.error) {
@@ -110,6 +111,21 @@ class Upload {
     /** @private */
     done() {
         this.videoDiv.querySelector("div.progress-wrp").style.display = "none";
+    }
+}
+
+async function copyLink(/**@type {PointerEvent}*/ event, /**@type {string}*/link) { 
+    try {
+        await navigator.clipboard.writeText(link)
+        event.target.classList.add("greenbutton");
+        event.target.innerText = "Copied!";
+        setTimeout(() => {
+            event.target.classList.remove("greenbutton");
+            event.target.innerText = "Copy Link";
+        }, 1000);
+    }
+    catch {
+        showError("Failed to copy, most likely browser disallows clipboard.");
     }
 }
 
@@ -142,20 +158,7 @@ async function loadVideos(/**@type {boolean}*/ public) {
                 videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
             }
             videoDiv.querySelector("div.video").onclick = () => { document.location = `${response.base_url}/v/${video.id}`; }
-            videoDiv.querySelector("button.copybutton").onclick = async (/**@type {PointerEvent}*/ event) => { 
-                try {
-                    await navigator.clipboard.writeText(`${response.base_url}/v/${video.id}`)
-                    event.target.classList.add("greenbutton");
-                    event.target.innerText = "Copied!";
-                    setTimeout(() => {
-                        event.target.classList.remove("greenbutton");
-                        event.target.innerText = "Copy Link";
-                    }, 1000);
-                }
-                catch {
-                    showError("Failed to copy, most likely browser disallows clipboard.");
-                }
-            }
+            videoDiv.querySelector("button.copybutton").onclick = event => copyLink(event, `${response.base_url}/v/${video.id}`)
             videosListElem.appendChild(videoDiv);
         }
     }
