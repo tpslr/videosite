@@ -3,7 +3,7 @@ load_dotenv()
 from flask import Flask, request, make_response, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
-from src import file_upload, auth
+from src import file_upload, auth, view_count
 from os import environ
 
 
@@ -14,6 +14,7 @@ VIDEO_FOLDER = environ.get("VIDEO_FOLDER")
 
 app = Flask(SITE_NAME)
 app.config["SQLALCHEMY_DATABASE_URI"] = environ.get("SQLALCHEMY_DATABASE_URI")
+app.config["SESSION_COOKIE_NAME"] = "vvc"
 app.secret_key = environ.get("FLASK_SECRET_KEY")
 
 IS_DEV = environ.get("ENVIRONMENT") == "dev"
@@ -26,6 +27,7 @@ db = SQLAlchemy(app)
 
 auth.db = db
 file_upload.db = db
+view_count.db = db
 
 @app.route("/")
 def index():
@@ -81,8 +83,6 @@ def videos(user: auth.User):
         # if requesting public videos, replace owner uid with owner username
         for video in videos:
             if "owner" in video:
-                print(video["owner"])
-                print(auth.get_user(video["owner"]).username)
                 video["owner"] = auth.get_user(video["owner"]).username
 
     return { "base_url": BASE_URL, "videos": list(videos) }
@@ -98,12 +98,20 @@ def video_player(video_id: str):
     if not video:
         return "Not Found", 404
     
+    view_count.begin_view(video_id)
+    
     return render_template("player.html", 
                            header_title=SITE_NAME,
                            title=video["title"], 
                            views=video["views"],
                            video_url=f"{BASE_URL}/video_data/{video_id}/compressed.mp4",
                            thumbnail_url=f"{BASE_URL}/video_data/{video_id}/thumbnail.png")
+
+@app.route("/v/<video_id>/view")
+@auth.requires_auth()
+def video_view(user: auth.User, video_id: str):
+    view_count.process_view(video_id, user)
+    return "OK"
 
 @app.route("/api/setprogress/<video_id>", methods=["POST"])
 # this route is only accessible to localhost, for ffmpeg to report back transcode progress

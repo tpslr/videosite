@@ -22,8 +22,23 @@
             width: fit-content;
         }
     </style>
+    <script>
+        async function onLoad() {
+            const video = document.querySelector("video");
+            let lastT = 0;
+            while (true) {
+                let t = 0;
+                for (let i = 0; i < video.played.length; i++) {
+                    t += video.played.end(i) - video.played.start(i);
+                }
+                if (t != lastT) await fetch(document.location.href + "/view", { headers: { "T": t } });
+                lastT = t;
+                await new Promise(resolve => setTimeout(resolve, 4000));
+            }
+        }
+    </script>
 </head>
-<body>
+<body onload="onLoad();">
     {% include "header.html" %}
     <div class="center">
         <video src="{{ video_url }}" poster="{{ thumbnail_url }}" controls style="width: 800px;"></video>
