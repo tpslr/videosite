@@ -150,6 +150,17 @@ div.videobox > div.video {
     user-select: none;
     border-radius: 6px 6px 0 0;
 }
+div.videobox > div.video > div.duration {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    font-size: 0.8em;
+    background-color: #101020a0;
+    padding: 4px;
+    line-height: 1;
+    border-radius: 3px;
+    pointer-events: none;
+}
 div.videobox > div.videoinfo {
     position: relative;
     bottom: 0;

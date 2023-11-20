@@ -30,6 +30,9 @@ function getRelativeDate(/** @type {number} */ timestamp) {
     if (deltaHour >= 0.9) return rtf.format(Math.round(deltaHour), "hours");
     return "in less than an hour";
 }
+function secondsToVideoLenght(/**@type {Number}*/ seconds) {
+    return `${Math.floor(seconds / 60)}:${("0" + Math.round(seconds % 60)).slice(-2)}` 
+}
 
 function showError(message) {
     alert(message);
@@ -94,6 +97,7 @@ class Upload {
             this.videoDiv.querySelector("img.thumb").src = `/video_data/${response.video_id}/thumbnail-lowres.png`;
             this.videoDiv.querySelector("a.link").innerText = `${document.location.origin}/v/${response.video_id}`
             this.videoDiv.querySelector("a.link").href = `${document.location.origin}/v/${response.video_id}`
+            this.videoDiv.querySelector("div.duration").innerText = secondsToVideoLenght(response.duration);
             this.videoDiv.querySelector("button.copybutton").onclick = event => copyLink(event, `${document.location.origin}/v/${response.video_id}`)
             while (true) {
                 const res = await (await fetch(`/api/progress/${response.video_id}`)).json();
@@ -154,6 +158,7 @@ async function loadVideos(/**@type {boolean}*/ public) {
             videoDiv.querySelector("div.progress-wrp").style.display = "none";
             videoDiv.querySelector("img.thumb").src = `/video_data/${video.id}/thumbnail-lowres.png`;
             videoDiv.querySelector("span.title").innerText = video.title;
+            videoDiv.querySelector("div.duration").innerText = secondsToVideoLenght(video.duration);
             if (public) {
                 videoDiv.querySelector("a.link").style.display = "none";
                 videoDiv.querySelector("span.owner").style.display = "unset";

@@ -64,9 +64,9 @@ def handle_upload(owner: int):
     # transcode the video
     # transcoding is important, as it saves space on the server by compressing files, 
     # and since the transcoded video is generated on the server, it should get rid of any trickery with the video metadata
-    transcode(owner, video_id, file_name, file.filename)
+    video_duration = transcode(owner, video_id, file_name, file.filename)
 
-    return { "video_id": video_id }
+    return { "video_id": video_id, "duration": video_duration }
 
 
 def cleanup_failed(video_id: str):
@@ -114,6 +114,7 @@ def transcode(owner: int, video_id: str, file_name: str, title: str):
         .output(output_thumbnail_lowres, vf="thumbnail", s="376x222", frames=1)
         .run(overwrite_output=True, quiet=True)
     )
+    return video_duration
 
 # ran after transcoding video
 def after_transcode(video_id: str):
