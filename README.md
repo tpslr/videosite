@@ -31,5 +31,5 @@ Sivu on saatavilla osoitteessa [videosite.topias.xyz](https://videosite.topias.x
 * Videoiden poistaminen
 
 ## Ongelmat
-* ohjelma käyttää pythonissa globaaleita arvoja muistamaan sessiot ja videoiden transcoden etenemisen, tämä ei toimi oikein jos wsgi-workereitä on enemmän kuin yksi, joten sivu saattaa toimia tällä hetkellä hitaasti 
 * käyttöliittymässä jotkin napit ja muut eivät toimi oikein
+* käyttöliittymä näyttää hirveältä vaalealla teemalla
