@@ -4,9 +4,15 @@ async function showAnonymousWarning() {
 
     // only show warning every 12 hours
     if (expires && (!lastWarning || Number(lastWarning) < new Date().getTime() - 1000 * 60 * 60 * 12)) {
-        document.getElementById("anonymous-warning").style.display = "block";
+        document.getElementById("anonymous-warning").style.display = "";
         document.getElementById("anonymous-warning-time").textContent = getRelativeDate(Number(expires));
         localStorage.setItem("last-anonymous-warning", new Date().getTime());
+        window.onresize = () => {
+            // resize anonymous warning close button
+            const warningHeight = window.getComputedStyle(document.querySelector("div#anonymous-warning")).height;
+            document.querySelector("div#anonymous-warning").style.gridTemplateColumns = `auto ${warningHeight}`;
+        }
+        window.onresize();
     }
 }
 
