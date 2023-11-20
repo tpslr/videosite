@@ -224,7 +224,7 @@ div.thumbwrap div.play {
 div.thumbwrap:hover div.play {
     opacity: 0.8;
 }
-img.thumb {
+img.thumb, video.thumb {
     border-radius: 4px 4px 0 0;
     position: relative;
     width: 100%;

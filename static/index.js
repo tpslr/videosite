@@ -52,6 +52,8 @@ class Upload {
     progressBar;
     /**@type {HTMLDivElement} @readonly*/
     progressStatus;
+    /**@type {HTMLVideoElement} @readonly*/
+    thumbnailVideo;
     /**@type {boolean} @readonly*/
     valid;
     constructor(/**@type {File}*/ file) {
@@ -66,6 +68,19 @@ class Upload {
         this.progressStatus = this.videoDiv.querySelector("div.progress-status");
         this.videoDiv.querySelector("span.title").innerText = file.name;
         document.getElementById("uploadbar").insertAdjacentElement("afterend", this.videoDiv);
+
+        this.videoDiv.querySelector("img.thumb").style.display = "none";
+        const thumbnailVideo = document.createElement("video");
+        this.thumbnailVideo = thumbnailVideo;
+        thumbnailVideo.className = "thumb";
+        thumbnailVideo.src = URL.createObjectURL(file);
+        thumbnailVideo.autoplay = false;
+        thumbnailVideo.controls = false;
+        thumbnailVideo.onloadedmetadata = () => {
+            this.videoDiv.querySelector("div.duration").innerText = secondsToVideoLenght(this.thumbnailVideo.duration);
+        }
+        const thumbwrap = this.videoDiv.querySelector("div.thumbwrap");
+        thumbwrap.insertBefore(thumbnailVideo, thumbwrap.firstChild);
     }
     /**@private */
     invalid(/**@type {string}*/ reason) {
@@ -94,6 +109,9 @@ class Upload {
             if (response.error) {
                 return showError(response.error.message);
             }
+            window.URL.revokeObjectURL(this.thumbnailVideo.src);
+            this.thumbnailVideo.style.display = "none";
+            this.videoDiv.querySelector("img.thumb").style.display = "";
             this.videoDiv.querySelector("img.thumb").src = `/video_data/${response.video_id}/thumbnail-lowres.png`;
             this.videoDiv.querySelector("a.link").innerText = `${document.location.origin}/v/${response.video_id}`
             this.videoDiv.querySelector("a.link").href = `${document.location.origin}/v/${response.video_id}`
