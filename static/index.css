@@ -153,8 +153,12 @@ div.videobox > div.video {
 div.videobox > div.videoinfo {
     position: relative;
     bottom: 0;
-    padding: 8px;
-    margin-left: 2px;
+    margin: 8px;
+    margin-left: 10px;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .progress-wrp {
