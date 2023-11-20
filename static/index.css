@@ -248,6 +248,7 @@ span.owner {
     background-color: var(--ui-highlight);
     transition: filter 0.1s linear;
     user-select: none;
+    color: var(--ui-text-color);
 }
 .uibutton:hover {
     filter: brightness(0.90);
