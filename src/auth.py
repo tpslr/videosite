@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
+import bcrypt
 from flask import request, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
@@ -20,6 +21,7 @@ sessions: dict[str, Session] = {}
 user_cache: dict[int, User] = {}
 
 ANONYMOUS_EXPIRY_DAYS = float(environ.get("ANONYMOUS_EXPIRY_DAYS"))    
+REFRESH_EXPIRY_DAYS = float(environ.get("REFRESH_EXPIRY_DAYS") or 30)
 IS_DEV = environ.get("ENVIRONMENT") == "dev"
 
 if not IS_DEV:
@@ -36,10 +38,10 @@ class User:
 class Session:
     user: User
     session_token: str
-    refresh: Optional[AnonymousRefresh] = None
+    refresh: Optional[RefreshToken] = None
 
 @dataclass
-class AnonymousRefresh:
+class RefreshToken:
     token: str
     expires: int
 
@@ -139,13 +141,37 @@ def login_anonymous(user: User):
     if user.type != UserType.anonymous:
         raise ValueError("Tried to anonymous login a non-anonymous user.")
     
+    return generate_refresh(user, ANONYMOUS_EXPIRY_DAYS)
+
+
+def login_normal(username: str, password: str):
+    sql = text("SELECT uid, password FROM users WHERE username=:username;")
+    result = db.session.execute(sql, { "username": username }).fetchone()
+
+    if not result:
+        return AuthError("Incorrect username")
+    
+    [uid, pw_hash] = result
+    
+    user = get_user(uid)
+
+    if user.type == UserType.anonymous:
+        return AuthError("Tried to login as an anonymous user")
+    
+    if not bcrypt.checkpw(password.encode("utf-8"), pw_hash.encode("utf-8")):
+        return AuthError("Incorrect password")
+    
+    return generate_refresh(user, REFRESH_EXPIRY_DAYS)
+
+# generates a refresh token for a user, saves, and returns it
+def generate_refresh(user: User, days: float):
     refresh_token = token_urlsafe(32)
-    expires = datetime.now(timezone.utc) + timedelta(days=ANONYMOUS_EXPIRY_DAYS)
+    expires = datetime.now(timezone.utc) + timedelta(days=days)
 
     sql = text("INSERT INTO tokens (uid, token, expires) VALUES (:uid, :token, :expires);")
     db.session.execute(sql, { "uid": user.uid, "token": refresh_token, "expires": expires })
     db.session.commit()
-    return AnonymousRefresh(refresh_token, int(expires.timestamp() * 1000))
+    return RefreshToken(refresh_token, int(expires.timestamp() * 1000))
 
 def create_anonymous_user():
     username = ""
@@ -159,3 +185,20 @@ def create_anonymous_user():
     user = User(uid, UserType.anonymous, username)
     user_cache[uid] = user
     return user
+
+
+def create_normal_user(username: str, password: str):
+    # make sure the username is free
+    if not username_free(username):
+        return AuthError("Username taken")
+    
+    hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    
+    sql = text("INSERT INTO users (type, username, password) VALUES ('normal', :username, :password) RETURNING uid;")
+    uid = db.session.execute(sql, { "username": username, "password": hash.decode("utf-8") }).fetchone()[0]
+    db.session.commit()
+
+    user = User(uid, UserType.normal, username)
+    user_cache[uid] = user
+
+    return generate_refresh(user, REFRESH_EXPIRY_DAYS)
