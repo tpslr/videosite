@@ -3,7 +3,7 @@ load_dotenv()
 from flask import Flask, request, make_response, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
-from src import file_upload, auth, view_count
+from src import file_upload, auth, view_count, helpers
 from os import environ
 
 
@@ -48,6 +48,26 @@ def get_session():
     response = make_response(body)
     response.set_cookie("session", session.session_token, secure=not IS_DEV, httponly=True, samesite="Strict")
     return response
+
+@app.route("/api/login", methods=["POST"])
+@helpers.requires_form_data({ "username": str, "password": str })
+def login():
+    refresh = auth.login_normal(request.form["username"], request.form["password"])
+    
+    if type(refresh) is auth.AuthError:
+        return { "error": refresh }
+    
+    return { "refresh": refresh }
+
+@app.route("/api/signup", methods=["POST"])
+@helpers.requires_form_data({ "username": str, "password": str })
+def signup():
+    refresh = auth.create_normal_user(request.form["username"], request.form["password"])
+
+    if type(refresh) is auth.AuthError:
+        return { "error": refresh }
+    
+    return { "refresh": refresh }
 
 @app.route("/api/upload", methods=["POST"])
 @auth.requires_auth()
@@ -116,6 +136,6 @@ def video_view(user: auth.User, video_id: str):
 @app.route("/api/setprogress/<video_id>", methods=["POST"])
 # this route is only accessible to localhost, for ffmpeg to report back transcode progress
 def set_progress(video_id):
-    if request.remote_addr not in ["127.0.0.1", "::1"]:
+    if request.remote_addr not in ["127.0.0.1", "::1"] or "X-Proxied-For" in request.headers:
         return "Forbidden", 403
     return file_upload.set_transcode_progress(video_id)
