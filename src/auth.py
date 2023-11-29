@@ -48,6 +48,7 @@ class RefreshToken:
 @dataclass
 class AuthError:
     message: str
+    display: Optional[bool] = None
 
 class UserType(str, Enum):
     anonymous = "anonymous"
@@ -149,7 +150,7 @@ def login_normal(username: str, password: str):
     result = db.session.execute(sql, { "username": username }).fetchone()
 
     if not result:
-        return AuthError("Incorrect username")
+        return AuthError("Incorrect username", True)
     
     [uid, pw_hash] = result
     
@@ -159,7 +160,7 @@ def login_normal(username: str, password: str):
         return AuthError("Tried to login as an anonymous user")
     
     if not bcrypt.checkpw(password.encode("utf-8"), pw_hash.encode("utf-8")):
-        return AuthError("Incorrect password")
+        return AuthError("Incorrect password", True)
     
     return generate_refresh(user, REFRESH_EXPIRY_DAYS)
 
@@ -188,9 +189,14 @@ def create_anonymous_user():
 
 
 def create_normal_user(username: str, password: str):
+    if len(username) < 3:
+        return AuthError("Username too short", True)
+    if len(password) < 6:
+        return AuthError("Password too short", True)
+    
     # make sure the username is free
     if not username_free(username):
-        return AuthError("Username taken")
+        return AuthError("Username taken", True)
     
     hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
     
