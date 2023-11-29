@@ -27,6 +27,8 @@ IS_DEV = environ.get("ENVIRONMENT") == "dev"
 if not IS_DEV:
     redis = Redis()
     redis.select(1)
+    usercache_expire = redis.pubsub()
+    usercache_expire.subscribe("usercache_expire")
 
 @dataclass
 class User:
@@ -120,6 +122,14 @@ def create_session(user: User):
 
 # loads a user from cache or db by user id
 def get_user(uid: int):
+    if not IS_DEV:
+        while True:
+            # delete all expired entries from usercache
+            message = usercache_expire.get_message()
+            if not message:
+                break
+            del user_cache[message["data"]]
+
     if uid in user_cache:
         return user_cache[uid]
     
@@ -249,4 +259,8 @@ def convert_anonymous_user(username: str, password: str, refresh_token: str):
     user.type = UserType.normal
     user.username = username
 
+    if not IS_DEV:
+        # tell all the other workers this users cached data has expired
+        redis.publish("usercache-expire", user.uid)
+    
     return generate_refresh(user, REFRESH_EXPIRY_DAYS)
