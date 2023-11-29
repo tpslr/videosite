@@ -97,15 +97,9 @@ def get_session(refresh_token):
         session.refresh = login_anonymous(user)
         return session
     
-    result = db.session.execute(text("SELECT uid FROM tokens WHERE token=:token AND expires>now();"), { "token": refresh_token }).fetchone()
-    if not result or len(result) < 1:
-        # if no result was returned from the db, this means the refresh token didn't exist
-        return AuthError("Invalid refresh token.")
-    
-    user = get_user(result[0])
-    if not user:
-        # this should never happen, if the session was valid the user should also be valid
-        return AuthError("User not found.")
+    user = user_from_refresh(refresh_token)
+    if type(user) is AuthError: 
+        return user
     
     session = create_session(user)
 
@@ -135,6 +129,21 @@ def get_user(uid: int):
     
     user = User(uid, user_data["type"], user_data["username"])
     user_cache[uid] = user
+    return user
+
+# finds a user by refresh token
+def user_from_refresh(refresh_token: str):
+
+    result = db.session.execute(text("SELECT uid FROM tokens WHERE token=:token AND expires>now();"), { "token": refresh_token }).fetchone()
+    if not result or len(result) < 1:
+        # if no result was returned from the db, this means the refresh token didn't exist
+        return AuthError("Invalid refresh token.")
+    
+    user = get_user(result[0])
+    if not user:
+        # this should never happen, if the session was valid the user should also be valid
+        return AuthError("User not found.")
+    
     return user
 
 # generates a refresh token for an anonymous user
@@ -206,5 +215,38 @@ def create_normal_user(username: str, password: str):
 
     user = User(uid, UserType.normal, username)
     user_cache[uid] = user
+
+    return generate_refresh(user, REFRESH_EXPIRY_DAYS)
+
+# converts an anonymous user to a normal user
+def convert_anonymous_user(username: str, password: str, refresh_token: str):
+    if len(username) < 3:
+        return AuthError("Username too short", True)
+    if len(password) < 6:
+        return AuthError("Password too short", True)
+    
+    user = user_from_refresh(refresh_token)
+    if type(user) is AuthError:
+        # AuthError while finding anonymous user
+        return user
+    
+    if user.type != UserType.anonymous:
+        return AuthError(f"Tried to convert a non-anonymous user")
+
+    if user.username != username:
+        # make sure the username is free (only when it's not what it originally was)
+        if not username_free(username):
+            return AuthError("Username taken", True)
+
+    hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    
+    # save changes to db
+    sql = text("UPDATE users SET type='normal', username=:username, password=:password WHERE uid=:uid;")
+    db.session.execute(sql, { "uid": user.uid, "username": username, "password": hash.decode("utf-8") })
+    db.session.commit()
+
+    # save changes to cache
+    user.type = UserType.normal
+    user.username = username
 
     return generate_refresh(user, REFRESH_EXPIRY_DAYS)

@@ -69,7 +69,11 @@ def login():
 @app.route("/api/signup", methods=["POST"])
 @helpers.requires_form_data({ "username": str, "password": str })
 def signup():
-    refresh = auth.create_normal_user(request.form["username"], request.form["password"])
+    refresh_token = request.headers.get("Authorization")
+    if refresh_token:
+        refresh = auth.convert_anonymous_user(request.form["username"], request.form["password"], refresh_token)
+    else:
+        refresh = auth.create_normal_user(request.form["username"], request.form["password"])
 
     if type(refresh) is auth.AuthError:
         return { "error": refresh }
