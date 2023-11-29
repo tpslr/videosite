@@ -46,7 +46,7 @@ async function init() {
     if (!user) return;
 
     document.getElementById("header-username").innerText = user.username;
-    document.getElementById("header-anonymous").style.display = (user.type == "anonymous") ? "inline" : "none";
+    document.getElementById("header-user-type").innerText = user.type + " user";
 }
 
 (async () => {
