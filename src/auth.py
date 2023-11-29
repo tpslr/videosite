@@ -128,6 +128,10 @@ def get_user(uid: int):
             message = usercache_expire.get_message()
             if not message:
                 break
+            if message["type"] != "message":
+                continue
+            if message["data"] not in user_cache:
+                continue
             del user_cache[message["data"]]
 
     if uid in user_cache:
