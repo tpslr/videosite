@@ -6,6 +6,7 @@
  * @typedef { { token: string, expires: number } } AnonymousRefresh
  * @typedef { { user: User, refresh?: AnonymousRefresh } | { error: AuthError } } GetSessionResponse
  */
+window.userCallback = () => {};
 
 async function getSession(retry /**@type {number}*/ = 0) {
     // only retry twice
@@ -32,6 +33,7 @@ async function getSession(retry /**@type {number}*/ = 0) {
         }
         // set the user on window so it's accessible everywhere
         window.user = result.user;
+        window.userCallback();
     }
     catch {
         getSession(retry + 1)

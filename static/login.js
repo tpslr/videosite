@@ -4,7 +4,7 @@
  */
 
 /** @returns {Promise<{ result?: AuthResult, error?: AuthError }>} */
-async function sendForm(/**@type {string}*/url, /**@type {FormData}*/formData) {
+async function sendForm(/**@type {string}*/url, /**@type {FormData}*/formData, /**@type {string | undefined}*/ authorization = undefined) {
     function toJson(/**@type {number}*/ status, /**@type {string}*/text) {
         try {
             const result = JSON.parse(text);
@@ -18,6 +18,7 @@ async function sendForm(/**@type {string}*/url, /**@type {FormData}*/formData) {
     return new Promise(resolve => {
         const req = new XMLHttpRequest();
         req.open("POST", url);
+        if (authorization) req.setRequestHeader("Authorization", authorization);
         req.onload = () => resolve(toJson(req.status, req.response));
         req.onerror = () => resolve(toJson(req.status, req.response));
         req.send(formData)
@@ -85,8 +86,10 @@ async function signUp() {
     loginLoader.style.display = "block";
 
     const formData = new FormData(document.querySelector("form#signup-form"));
+    
+    const authorization = (window.user && window.user.type == "anonymous") ? localStorage.getItem("refresh-token") : undefined;
 
-    const res = await sendForm("/api/signup", formData)
+    const res = await sendForm("/api/signup", formData, authorization);
 
     loginLoader.style.display = "";
 
@@ -116,4 +119,15 @@ async function initLogin() {
         const doSignUp = document.location.pathname.endsWith("/signup")
         showForm(doSignUp);
     });
+
+    if (doSignUp) {
+        window.userCallback = () => {
+            // window.userCallback will be called by the auth script once it's gotten the current user
+            if (window.user && window.user.type == "anonymous") {
+                document.getElementById("signup-user").value = window.user.username;
+            }
+        }
+        // call it immediately in case auth script was done already
+        window.userCallback();
+    }
 }
