@@ -33,6 +33,13 @@ view_count.db = db
 def index():
     return render_template("index.html", header_title=SITE_NAME, title=SITE_NAME)
 
+@app.route("/login")
+def login_page():
+    return render_template("login.html", header_title=SITE_NAME, title=f"Login - {SITE_NAME}", site_name=SITE_NAME)
+@app.route("/signup")
+def signup_page():
+    return render_template("login.html", header_title=SITE_NAME, title=f"Sign Up - {SITE_NAME}", site_name=SITE_NAME)
+
 
 @app.route("/api/getsession")
 def get_session():

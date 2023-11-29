@@ -1,0 +1,125 @@
+body {
+    --clr-back-3: #3a3a3f;
+    --clr-loader: #6131d1;
+    --clr-link: #4f7be2;
+    --clr-link-visited: #874fe2;
+    --border-color: #292930;
+}
+
+div#loginform {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: fit-content;
+    width: 220px;
+    background-color: var(--ui-background);
+    border-radius: 5px;
+    border: var(--border-color) 1px solid;
+    padding: 40px 40px;
+    overflow: hidden;
+    transition: height 0.3s ease-in-out 0s;
+}
+
+div#loginform > form > label {
+    margin-top: 1rem;
+    margin-bottom: 0.1rem;
+    display: inline-block;
+}
+div#loginform > form > div.input {
+    background-color: var(--clr-back-3);
+    text-align: center;
+    width: 220px;
+    height: 25px;
+    border: none;
+    border-radius: 2px;
+    padding: 0;
+    overflow: hidden;
+}
+div#loginform > form > div.input > input {
+    background-color: var(--clr-back-3);
+    color: var(--text-color);
+    text-align: center;
+    margin: -1px;
+    height: calc(100% + 2px);
+    width: calc(100% + 2px);
+    border: none;
+    padding: 0;
+}
+div#loginform > form > div.input > input:focus {
+    border: none;
+    outline: none!important;
+}
+div#loginform > form > div.input > input:-webkit-autofill, input:-internal-autofill-selected {
+    box-shadow: 0px 0px 0px 20px var(--clr-back-3) inset;
+    caret-color: var(--text-color);
+    -webkit-text-fill-color: var(--text-color);
+}
+
+
+div#loginform > form > div.login-errwrap {
+    text-align: left;
+    width: 220px;
+}
+div#loginform > form > div.login-errwrap > p {
+    font-size: small;
+    color: red;
+    opacity: 0;
+    margin: 0;
+}
+
+div#loginform > form > button.login-button {
+    position: relative;
+    background-color: var(--ui-highlight);
+    border-radius: 2px;
+    width: 220px;
+    height: 25px;
+    border: none;
+    padding: 0;
+    outline: none!important;
+    margin-top: 1rem;
+    color: var(--ui-text-color);
+}
+div#loginform > form > button.login-button:hover {
+    filter: brightness(0.90);
+}
+div#loginform > form > button.login-button:active {
+    filter: brightness(0.85);
+}
+
+
+div#loginform > form > div.login-signup {
+    display: none;
+}
+div#loginform > h2 {
+    font-weight: 400;
+    text-align: center;
+}
+
+div#loginform > form > div.login-switchwrap {
+    margin-top: 10px;
+    text-align: left;
+    width: 220px;
+    font-size: small;
+}
+div#loginform > div#login-loader {
+    display: none;
+}
+div#loginform > div#login-loader > div#login-fade {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--ui-background);
+    opacity: 0.7;
+}
+
+
+div#loginform a {
+    color: var(--clr-link)
+}
+div#loginform a:visited {
+    color: var(--clr-link-visited)
+}
