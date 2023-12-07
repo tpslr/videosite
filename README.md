@@ -20,10 +20,11 @@ Sivu on saatavilla osoitteessa [videosite.topias.xyz](https://videosite.topias.x
 * Videot katsottavissa
 * Lista videoista näkyy
 * Sivua voi käyttää kirjautumatta
+* Käyttäjän luonti (linkki siihen puuttuu vielä)
+* Kirjautuminen
 
 
 ## Puuttuvat ominaisuudet
-* Käyttäjän luonti
 * Yksityiset videot
 * Tykkäykset ja kommentit
 * Ylläpitäjät
