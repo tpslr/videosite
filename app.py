@@ -14,6 +14,7 @@ VIDEO_FOLDER = environ.get("VIDEO_FOLDER")
 
 app = Flask(SITE_NAME)
 app.config["SQLALCHEMY_DATABASE_URI"] = environ.get("SQLALCHEMY_DATABASE_URI")
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"pool_pre_ping": True}
 app.config["SESSION_COOKIE_NAME"] = "vvc"
 app.secret_key = environ.get("FLASK_SECRET_KEY")
 
