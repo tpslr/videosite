@@ -3,6 +3,8 @@
 Sivulle voi nopeasti ladata videon, ja jakaa videon linkin jonnekkin, jolla muut voivat katsoa sen
 Sivu on saatavilla osoitteessa [videosite.topias.xyz](https://videosite.topias.xyz)
 
+Asennusohjeet paikallista testausta varten löytyvät tiedostosta [installation.md](installation.md)
+
 ## Ominaisuudet
 * Käyttäjä voi ladata sivulle videon
 * Videot ovat katsottavissa pelkällä linkillä ilman kirjautumista
