@@ -24,14 +24,15 @@ Asennusohjeet paikallista testausta varten löytyvät tiedostosta [installation.
 * Sivua voi käyttää kirjautumatta
 * Käyttäjän luonti (linkki siihen puuttuu vielä)
 * Kirjautuminen
+* Yksityiset videot
+* Videoiden poistaminen
 
 
 ## Puuttuvat ominaisuudet
-* Yksityiset videot
 * Tykkäykset ja kommentit
 * Ylläpitäjät
 * Videoiden reportit
-* Videoiden poistaminen
+
 
 ## Ongelmat
 * käyttöliittymässä jotkin napit ja muut eivät toimi oikein
