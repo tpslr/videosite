@@ -112,7 +112,7 @@ def list_videos(user: auth.User):
     if "public" in request.args:
         sql = text("SELECT id, views, duration, title, owner FROM videos WHERE owner!=:owner ORDER BY upload_date DESC LIMIT(:limit) OFFSET(:offset*:limit);")
     else:
-        sql = text("SELECT id, views, duration, title FROM videos WHERE owner=:owner AND private=false ORDER BY upload_date DESC LIMIT(:limit) OFFSET(:offset*:limit);")
+        sql = text("SELECT id, views, duration, title, private FROM videos WHERE owner=:owner AND private=false ORDER BY upload_date DESC LIMIT(:limit) OFFSET(:offset*:limit);")
     videos = db.session.execute(sql, { "owner": user.uid, "limit": limit, "offset": offset }).mappings().fetchall()
     videos = [dict(video) for video in videos]
 
