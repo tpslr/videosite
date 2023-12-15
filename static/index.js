@@ -113,8 +113,8 @@ class Upload {
             this.thumbnailVideo.style.display = "none";
             this.videoDiv.querySelector("img.thumb").style.display = "";
             this.videoDiv.querySelector("img.thumb").src = `/video_data/${response.video_id}/thumbnail-lowres.png`;
-            this.videoDiv.querySelector("a.link").innerText = `${document.location.origin}/v/${response.video_id}`
-            this.videoDiv.querySelector("a.link").href = `${document.location.origin}/v/${response.video_id}`
+            //this.videoDiv.querySelector("a.link").innerText = `${document.location.origin}/v/${response.video_id}`
+            //this.videoDiv.querySelector("a.link").href = `${document.location.origin}/v/${response.video_id}`
             this.videoDiv.querySelector("div.duration").innerText = secondsToVideoLenght(response.duration);
             this.videoDiv.querySelector("button.copybutton").onclick = event => copyLink(event, `${document.location.origin}/v/${response.video_id}`)
             this.videoDiv.querySelector("button.delete").style.display = "";
@@ -134,6 +134,9 @@ class Upload {
                 
                 await new Promise(resolve => setTimeout(resolve, 200));
             }
+
+            this.videoDiv.querySelector("button.private").style.display = "";
+            this.videoDiv.querySelector("button.private").onclick = event => privateVideo(this.videoDiv, response.video_id)
         }
         catch {
             return showError("Upload error");
@@ -160,6 +163,21 @@ async function copyLink(/**@type {PointerEvent}*/ event, /**@type {string}*/link
     }
 }
 
+/** @returns {Promise<{ error?: AuthError }>} */
+async function sendForm(/**@type {string}*/url, /**@type {FormData}*/formData, /**@type {string}*/method = "POST") {
+    return new Promise(resolve => {
+        const req = new XMLHttpRequest();
+        req.open(method, url);
+        req.onload = () => {
+            if (req.response != "OK")
+                return resolve(parseError(req.status, req.response));
+            resolve({})
+        }
+        req.onerror = () => resolve(parseError(req.status, req.response));
+        req.send(formData)
+    })
+}
+
 /** @returns { AuthError } */
 function parseError(/**@type {number}*/ status, /**@type {string}*/text) {
     try {
@@ -184,13 +202,24 @@ async function deleteVideo(/**@type {PointerEvent}*/ event, /**@type {string}*/v
     showError(error.message);
 }
 
-async function privateVideo(/**@type {PointerEvent}*/ event, /**@type {string}*/videoId) {
+async function privateVideo(/**@type {HTMLDivElement}*/ videoDiv, /**@type {string}*/videoId) {
+    const private = !videoDiv.classList.contains("private");
+
     const formData = new FormData()
-    formData.append("action", "")
+    formData.append("action", private ? "set_private" : "set_public");
+    const result = await sendForm(`/api/video/${videoId}`, formData, "PATCH");
+
+    if (result.error) {
+        return showError(result.error.message);
+    }
+
+    videoDiv.classList.toggle("private");
+
+    videoDiv.querySelector("button.private").innerText = private ? "Make Public" : "Make Private";
 }
 
 /**
- * @typedef {{ id: string, title: string, owner: string, duration: Number, views: Number }} Video
+ * @typedef {{ id: string, title: string, owner: string, duration: Number, views: Number, private?: boolean }} Video
  * @typedef {{ base_url: string, videos: Video[] } | { error: { message: string } }} VideosResponse
  */
 
@@ -215,11 +244,17 @@ async function loadVideos(/**@type {boolean}*/ public) {
                 videoDiv.querySelector("span.owner").innerText = video.owner;
             }
             else {
-                videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
-                videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
+                //videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
+                //videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
 
                 videoDiv.querySelector("button.delete").style.display = "";
                 videoDiv.querySelector("button.delete").onclick = event => deleteVideo(event, video.id)
+
+                videoDiv.querySelector("button.private").style.display = "";
+                videoDiv.querySelector("button.private").onclick = event => privateVideo(videoDiv, video.id)
+                videoDiv.querySelector("button.private").innerText = video.private ? "Make Public" : "Make Private";
+
+                if (video.private) videoDiv.classList.add("private");
             }
             videoDiv.querySelector("div.video").onclick = () => { document.location = `${response.base_url}/v/${video.id}`; }
             videoDiv.querySelector("button.copybutton").onclick = event => copyLink(event, `${response.base_url}/v/${video.id}`)

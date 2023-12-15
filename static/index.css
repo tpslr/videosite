@@ -161,6 +161,44 @@ div.videobox > div.video > div.duration {
     border-radius: 3px;
     pointer-events: none;
 }
+div.videobox > div.video > div.private-icon {
+    display: none;
+    position: absolute;
+    background-color: #101020a0;
+    border-radius: 4px;
+    padding: 0.7em;
+    right: 10px;
+    top: 10px;
+    width: 1.5em;
+}
+div.videobox.private > div.video > div.private-icon {
+    display: block;
+}
+div.videobox > div.video > div.private-icon > svg {
+    color: var(--text-color);
+}
+div.videobox > div.video > div.private-icon > div.tooltip {
+    position: absolute;
+    opacity: 0;
+    width: 150px;
+    background-color: var(--ui-background-80);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 4px;
+    padding-left: 8px;
+
+    z-index: 1;
+    transition: opacity ease 0.2s;
+
+    pointer-events: none;
+}
+
+div.videobox > div.video > div.private-icon:hover > div.tooltip {
+    opacity: 1;
+    pointer-events: all;
+}
+
 div.videobox > div.videoinfo {
     position: relative;
     bottom: 0;

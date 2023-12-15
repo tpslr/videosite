@@ -55,12 +55,13 @@ def modify_video(user: auth.User, id: str):
             set_private(id, False)
         case VideoUpdateAction.set_title:
             return helpers.create_error("Changing title is not implemented yet"), 501
-
+    
+    return "OK"
 
 
 def set_private(video_id: str, private: bool):
     sql = text("UPDATE videos SET private=:private WHERE id=:id")
-    db.session.execute(sql, { "id": video_id })
+    db.session.execute(sql, { "id": video_id, "private": private })
     db.session.commit()
 
 
