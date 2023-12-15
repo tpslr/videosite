@@ -3,7 +3,7 @@ load_dotenv()
 from flask import Flask, request, make_response, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
-from src import file_upload, auth, view_count, helpers
+from src import file_upload, auth, view_count, helpers, videos
 from os import environ
 
 
@@ -29,6 +29,11 @@ db = SQLAlchemy(app)
 auth.db = db
 file_upload.db = db
 view_count.db = db
+videos.db = db
+
+
+app.register_blueprint(videos.blueprint)
+
 
 @app.route("/")
 def index():
@@ -92,7 +97,7 @@ def progress(video_id):
 
 @app.route("/api/videos")
 @auth.requires_auth()
-def videos(user: auth.User):
+def list_videos(user: auth.User):
     limit = request.args["limit"] if "limit" in request.args else "20"
     offset = request.args["offset"] if "offset" in request.args else "0"
     try:
