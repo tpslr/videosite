@@ -1,3 +1,4 @@
+from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 from flask import Blueprint, request
 from sqlalchemy import text
@@ -25,6 +26,34 @@ def delete_video(user: auth.User, id: str):
 
     return "OK"
 
+
+class VideoUpdateAction(str, Enum):
+    set_private = "set_private"
+    set_public = "set_public"
+    set_title = "set_title"
+
+
+@blueprint.route("/api/video/<id>", methods=["PATCH"])
+@auth.requires_auth()
+@helpers.requires_form_data({ "action": VideoUpdateAction })
+def modify_video(user: auth.User, id: str):
+    if not is_owner(id, user):
+        return helpers.create_error("You don't own this video"), 403
+    
+    match request.form.get("action"):
+        case VideoUpdateAction.set_private:
+            set_private(id, True)
+        case VideoUpdateAction.set_public:
+            set_private(id, False)
+        case VideoUpdateAction.set_title:
+            return helpers.create_error("Changing title is not implemented yet"), 501
+
+
+
+def set_private(video_id: str, private: bool):
+    sql = text("UPDATE videos SET private=:private WHERE id=:id")
+    db.session.execute(sql, { "id": video_id })
+    db.session.commit()
 
 
 def is_owner(video_id: str, user: auth.User):
