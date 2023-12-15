@@ -117,6 +117,9 @@ class Upload {
             this.videoDiv.querySelector("a.link").href = `${document.location.origin}/v/${response.video_id}`
             this.videoDiv.querySelector("div.duration").innerText = secondsToVideoLenght(response.duration);
             this.videoDiv.querySelector("button.copybutton").onclick = event => copyLink(event, `${document.location.origin}/v/${response.video_id}`)
+            this.videoDiv.querySelector("button.delete").style.display = "";
+            this.videoDiv.querySelector("button.delete").onclick = event => deleteVideo(event, response.video_id)
+            
             while (true) {
                 const res = await (await fetch(`/api/progress/${response.video_id}`)).json();
                 if (res.error) {
@@ -157,6 +160,35 @@ async function copyLink(/**@type {PointerEvent}*/ event, /**@type {string}*/link
     }
 }
 
+/** @returns { AuthError } */
+function parseError(/**@type {number}*/ status, /**@type {string}*/text) {
+    try {
+        const result = JSON.parse(text);
+        if (result.error) return result.error;
+        return { "message": `Invalid server response` }
+    }
+    catch {
+        return { "message": `Unknown error (${status})` }
+    }
+}
+
+async function deleteVideo(/**@type {PointerEvent}*/ event, /**@type {string}*/videoId) {
+    const response = await fetch(`/api/video/${videoId}`, { method: "DELETE" });
+    if (response.ok) {
+        /**@type { HTMLDivElement } */
+        const videoBox = event.target.closest("div.videobox");
+        videoBox.parentElement.removeChild(videoBox);
+        return;
+    }
+    const error = parseError(await response.text());
+    showError(error.message);
+}
+
+async function privateVideo(/**@type {PointerEvent}*/ event, /**@type {string}*/videoId) {
+    const formData = new FormData()
+    formData.append("action", "")
+}
+
 /**
  * @typedef {{ id: string, title: string, owner: string, duration: Number, views: Number }} Video
  * @typedef {{ base_url: string, videos: Video[] } | { error: { message: string } }} VideosResponse
@@ -185,6 +217,9 @@ async function loadVideos(/**@type {boolean}*/ public) {
             else {
                 videoDiv.querySelector("a.link").href = `${response.base_url}/v/${video.id}`;
                 videoDiv.querySelector("a.link").innerText = `${response.base_url}/v/${video.id}`;
+
+                videoDiv.querySelector("button.delete").style.display = "";
+                videoDiv.querySelector("button.delete").onclick = event => deleteVideo(event, video.id)
             }
             videoDiv.querySelector("div.video").onclick = () => { document.location = `${response.base_url}/v/${video.id}`; }
             videoDiv.querySelector("button.copybutton").onclick = event => copyLink(event, `${response.base_url}/v/${video.id}`)
