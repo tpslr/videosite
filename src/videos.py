@@ -4,13 +4,16 @@ from flask import Blueprint, request
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from src import auth, helpers
+from os import path
+from shutil import rmtree
+from src.file_upload import VIDEO_FOLDER
 
 db: SQLAlchemy = None
 
 
 blueprint = Blueprint('videos', __name__)
 
-@blueprint.route("/api/video/:id", methods=["DELETE"])
+@blueprint.route("/api/video/<id>", methods=["DELETE"])
 @auth.requires_auth()
 def delete_video(user: auth.User, id: str):
     if not is_owner(id, user):
@@ -21,6 +24,11 @@ def delete_video(user: auth.User, id: str):
     
     sql = text("DELETE FROM views WHERE video_id=:id")
     db.session.execute(sql, { "id": id })
+    
+    # remove the entire folder created for the video
+    video_data_path = path.join(VIDEO_FOLDER, id)
+    if path.exists(video_data_path):
+        rmtree(video_data_path)
 
     db.session.commit()
 
