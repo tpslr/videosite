@@ -49,6 +49,19 @@ async function init() {
 
     document.getElementById("header-username").innerText = user.username;
     document.getElementById("header-user-type").innerText = user.type + " user";
+
+    if (!document.location.href.match(/(?:login|signup)$/)) {
+        const headerLoginLinks = document.querySelector("span.header-login");
+        headerLoginLinks.classList.remove("hide");
+        if (user.type != "anonymous") headerLoginLinks.classList.add("header-logout");
+    }
+}
+
+async function logout() {
+    localStorage.removeItem("refresh-token");
+    localStorage.removeItem("refresh-expires");
+    localStorage.removeItem("last-anonymous-warning");
+    document.location.reload();
 }
 
 (async () => {

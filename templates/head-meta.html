@@ -15,6 +15,7 @@
         --ui-background-80: #202025CC;
         --text-color: whitesmoke;
         --ui-text-color: #101010;
+        --link-color: #4f7be2;
         font-family: 'Open Sans', sans-serif;
         color: var(--text-color);
     }
@@ -54,5 +55,29 @@
     }
     #header-username {
 
+    }
+    .header-login {
+        position: relative;
+        float: right;
+        padding: 9px;
+        line-height: 0.95;
+    }
+    .header-login > a, .header-login > a:visited {
+        font-size: 0.9em;
+        color: var(--link-color);
+    }
+    .header-login > a.logout {
+        display: none;
+        font-size: 1em;
+        padding-top: 0.5em;
+    }
+    .header-login.header-logout > a {
+        display: none;
+    }
+    .header-login.header-logout > a.logout {
+        display: inline-block;
+    }
+    .hide {
+        display: none;
     }
 </style>
