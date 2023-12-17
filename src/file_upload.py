@@ -92,9 +92,9 @@ def is_valid_video(file_path: str):
 
 def transcode(owner: int, video_id: str, file_name: str, title: str):
     input_video = os.path.join(VIDEO_FOLDER, video_id, file_name)
-    output_video = os.path.join(VIDEO_FOLDER, video_id, f"compressed.mp4")
-    output_thumbnail = os.path.join(VIDEO_FOLDER, video_id, f"thumbnail.png")
-    output_thumbnail_lowres = os.path.join(VIDEO_FOLDER, video_id, f"thumbnail-lowres.png")
+    output_video = os.path.join(VIDEO_FOLDER, video_id, "compressed.mp4")
+    output_thumbnail = os.path.join(VIDEO_FOLDER, video_id, "thumbnail.png")
+    output_thumbnail_lowres = os.path.join(VIDEO_FOLDER, video_id, "thumbnail-lowres.png")
 
     # initialize a TranscodeProgress object for this transcode
     video_duration = get_video_duration(input_video)
