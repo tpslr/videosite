@@ -79,6 +79,12 @@ def signup():
     return { "refresh": refresh }
 
 
+@app.route("/api/logout", methods=["POST"])
+@auth.requires_auth()
+def logout(user: auth.User):
+    return auth.logout(user, request.headers.get("Authorization"))
+
+
 @app.route("/api/upload", methods=["POST"])
 @auth.requires_auth()
 def upload(user: auth.User):

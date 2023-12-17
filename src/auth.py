@@ -284,3 +284,10 @@ def convert_anonymous_user(username: str, password: str, refresh_token: str):
         redis.publish("usercache-expire", user.uid)
 
     return generate_refresh(user, REFRESH_EXPIRY_DAYS)
+
+
+def logout(user: User, refresh_token: str | None):
+    if refresh_token:
+        sql = text("DELETE FROM tokens WHERE token=:token")
+        db.session.execute(sql, { "token": refresh_token })
+        db.session.commit()

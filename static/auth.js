@@ -58,6 +58,10 @@ async function init() {
 }
 
 async function logout() {
+    const refreshToken = localStorage.getItem("refresh-token");
+
+    fetch("/api/logout", { method: "POST", headers: { Authorization: refreshToken } });
+
     localStorage.removeItem("refresh-token");
     localStorage.removeItem("refresh-expires");
     localStorage.removeItem("last-anonymous-warning");
