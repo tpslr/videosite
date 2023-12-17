@@ -95,34 +95,6 @@ def upload(user: auth.User):
 def progress(video_id):
     return file_upload.get_transcode_progress(video_id)
 
-@app.route("/api/videos")
-@auth.requires_auth()
-def list_videos(user: auth.User):
-    limit = request.args["limit"] if "limit" in request.args else "20"
-    offset = request.args["offset"] if "offset" in request.args else "0"
-    try:
-        limit = int(limit)
-    except:
-        return { "error": { "message": "missing arg limit" } }, 400
-    try:
-        offset = int(offset)
-    except:
-        return { "error": { "message": "missing arg offset" } }, 400
-    
-    if "public" in request.args:
-        sql = text("SELECT id, views, duration, title, owner FROM videos WHERE owner!=:owner AND private=false ORDER BY upload_date DESC LIMIT(:limit) OFFSET(:offset*:limit);")
-    else:
-        sql = text("SELECT id, views, duration, title, private FROM videos WHERE owner=:owner ORDER BY upload_date DESC LIMIT(:limit) OFFSET(:offset*:limit);")
-    videos = db.session.execute(sql, { "owner": user.uid, "limit": limit, "offset": offset }).mappings().fetchall()
-    videos = [dict(video) for video in videos]
-
-    if "public" in request.args:
-        # if requesting public videos, replace owner uid with owner username
-        for video in videos:
-            if "owner" in video:
-                video["owner"] = auth.get_user(video["owner"]).username
-
-    return { "base_url": BASE_URL, "videos": list(videos) }
 
 @app.route("/video_data/<path:filename>")
 def video_data(filename):
