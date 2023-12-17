@@ -30,11 +30,13 @@ if not IS_DEV:
     usercache_expire = redis.pubsub()
     usercache_expire.subscribe("usercache_expire")
 
+
 @dataclass
 class User:
     uid: int
     type: UserType
     username: str
+
 
 @dataclass
 class Session:
@@ -42,20 +44,24 @@ class Session:
     session_token: str
     refresh: Optional[RefreshToken] = None
 
+
 @dataclass
 class RefreshToken:
     token: str
     expires: int
+
 
 @dataclass
 class AuthError:
     message: str
     display: Optional[bool] = None
 
+
 class UserType(str, Enum):
     anonymous = "anonymous"
     normal = "normal"
     admin = "admin"
+
 
 # decorator to wrap a request function with, makes sure user session is valid and passes user object as first argument
 def requires_auth():
@@ -81,14 +87,19 @@ def requires_auth():
         return __requires_auth
     return _requires_auth
 
+
 # loads session data from redis
 def session_from_redis(session_token):
-    if IS_DEV: return # redis isn't used in dev environment
+    if IS_DEV:
+        return  # redis isn't used in dev environment
     uid = redis.get(session_token)
-    if not uid: return
+    if not uid:
+        return
     user = get_user(int(uid))
-    if not user: return
+    if not user:
+        return
     sessions[session_token] = Session(user, session_token)
+
 
 # returns a user session if provided with the correct refresh token, if no 
 def get_session(refresh_token):
@@ -107,9 +118,11 @@ def get_session(refresh_token):
 
     return session
 
+
 # makes sure a username is not being used
 def username_free(username: str):
     return not db.session.execute(text("SELECT uid FROM users WHERE username=:username;"), { "username": username }).mappings().fetchone()
+
 
 # generates a session token for a user
 def create_session(user: User):
@@ -119,6 +132,7 @@ def create_session(user: User):
     if not IS_DEV:
         redis.mset({ token: user.uid })
     return session
+
 
 # loads a user from cache or db by user id
 def get_user(uid: int):
@@ -145,6 +159,7 @@ def get_user(uid: int):
     user_cache[uid] = user
     return user
 
+
 # finds a user by refresh token
 def user_from_refresh(refresh_token: str):
 
@@ -159,6 +174,7 @@ def user_from_refresh(refresh_token: str):
         return AuthError("User not found.")
     
     return user
+
 
 # generates a refresh token for an anonymous user
 def login_anonymous(user: User):
@@ -187,6 +203,7 @@ def login_normal(username: str, password: str):
     
     return generate_refresh(user, REFRESH_EXPIRY_DAYS)
 
+
 # generates a refresh token for a user, saves, and returns it
 def generate_refresh(user: User, days: float):
     refresh_token = token_urlsafe(32)
@@ -196,6 +213,7 @@ def generate_refresh(user: User, days: float):
     db.session.execute(sql, { "uid": user.uid, "token": refresh_token, "expires": expires })
     db.session.commit()
     return RefreshToken(refresh_token, int(expires.timestamp() * 1000))
+
 
 def create_anonymous_user():
     username = ""
@@ -231,6 +249,7 @@ def create_normal_user(username: str, password: str):
     user_cache[uid] = user
 
     return generate_refresh(user, REFRESH_EXPIRY_DAYS)
+
 
 # converts an anonymous user to a normal user
 def convert_anonymous_user(username: str, password: str, refresh_token: str):
