@@ -20,7 +20,7 @@ sessions: dict[str, Session] = {}
 
 user_cache: dict[int, User] = {}
 
-ANONYMOUS_EXPIRY_DAYS = float(environ.get("ANONYMOUS_EXPIRY_DAYS"))    
+ANONYMOUS_EXPIRY_DAYS = float(environ.get("ANONYMOUS_EXPIRY_DAYS"))
 REFRESH_EXPIRY_DAYS = float(environ.get("REFRESH_EXPIRY_DAYS") or 30)
 IS_DEV = environ.get("ENVIRONMENT") == "dev"
 
@@ -101,7 +101,7 @@ def session_from_redis(session_token):
     sessions[session_token] = Session(user, session_token)
 
 
-# returns a user session if provided with the correct refresh token, if no 
+# returns a user session if provided with the correct refresh token, if no
 def get_session(refresh_token):
     if not refresh_token:
         user = create_anonymous_user()
@@ -111,7 +111,7 @@ def get_session(refresh_token):
         return session
     
     user = user_from_refresh(refresh_token)
-    if type(user) is AuthError: 
+    if type(user) is AuthError:
         return user
     
     session = create_session(user)
