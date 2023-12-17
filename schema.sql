@@ -23,6 +23,26 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 
+CREATE TABLE public.comments (
+    id integer NOT NULL,
+    owner integer,
+    content text,
+    video text
+);
+
+
+CREATE SEQUENCE public.comments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.comments_id_seq OWNED BY public.comments.id;
+
+
 CREATE TABLE public.tokens (
     uid integer,
     token text NOT NULL,
@@ -67,7 +87,13 @@ CREATE TABLE public.views (
 );
 
 
+ALTER TABLE ONLY public.comments ALTER COLUMN id SET DEFAULT nextval('public.comments_id_seq'::regclass);
+
 ALTER TABLE ONLY public.users ALTER COLUMN uid SET DEFAULT nextval('public.users_uid_seq'::regclass);
+
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
 
 
 ALTER TABLE ONLY public.users
@@ -76,6 +102,14 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.videos
     ADD CONSTRAINT videos_pkey PRIMARY KEY (id);
+
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_owner_fkey FOREIGN KEY (owner) REFERENCES public.users(uid);
+
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_video_fkey FOREIGN KEY (video) REFERENCES public.videos(id);
 
 
 ALTER TABLE ONLY public.tokens
