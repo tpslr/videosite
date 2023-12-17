@@ -7,12 +7,14 @@ from .auth import User
 
 db: SQLAlchemy = None
 
+
 def begin_view(video_id: str):
     view_id = uuid4()
 
     view = { "v": video_id, "h": view_id, "w": False, "t": datetime.now().timestamp() }
 
     session["v"] = view
+
 
 def process_view(video_id: str, user: User):
     if "v" not in session:

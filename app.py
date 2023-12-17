@@ -7,7 +7,6 @@ from src import file_upload, auth, view_count, helpers, videos
 from os import environ
 
 
-
 SITE_NAME = environ.get("SITE_NAME") or __name__
 BASE_URL = environ.get("BASE_URL") or "http://localhost:5000"
 VIDEO_FOLDER = environ.get("VIDEO_FOLDER")
@@ -39,9 +38,12 @@ app.register_blueprint(videos.blueprint)
 def index():
     return render_template("index.html", header_title=SITE_NAME, title=SITE_NAME)
 
+
 @app.route("/login")
 def login_page():
     return render_template("login.html", header_title=SITE_NAME, title=f"Login - {SITE_NAME}", site_name=SITE_NAME)
+
+
 @app.route("/signup")
 def signup_page():
     return render_template("login.html", header_title=SITE_NAME, title=f"Sign Up - {SITE_NAME}", site_name=SITE_NAME)
@@ -62,6 +64,7 @@ def get_session():
     response.set_cookie("session", session.session_token, secure=not IS_DEV, httponly=True, samesite="Strict")
     return response
 
+
 @app.route("/api/login", methods=["POST"])
 @helpers.requires_form_data({ "username": str, "password": str })
 def login():
@@ -71,6 +74,7 @@ def login():
         return { "error": refresh }
     
     return { "refresh": refresh }
+
 
 @app.route("/api/signup", methods=["POST"])
 @helpers.requires_form_data({ "username": str, "password": str })
@@ -86,10 +90,12 @@ def signup():
     
     return { "refresh": refresh }
 
+
 @app.route("/api/upload", methods=["POST"])
 @auth.requires_auth()
 def upload(user: auth.User):
     return file_upload.handle_upload(user.uid)
+
 
 @app.route("/api/progress/<video_id>")
 def progress(video_id):
@@ -99,6 +105,7 @@ def progress(video_id):
 @app.route("/video_data/<path:filename>")
 def video_data(filename):
     return send_from_directory(VIDEO_FOLDER, filename)
+
 
 @app.route("/v/<video_id>")
 def video_player(video_id: str):
@@ -116,11 +123,13 @@ def video_player(video_id: str):
                            video_url=f"{BASE_URL}/video_data/{video_id}/compressed.mp4",
                            thumbnail_url=f"{BASE_URL}/video_data/{video_id}/thumbnail.png")
 
+
 @app.route("/v/<video_id>/view")
 @auth.requires_auth()
 def video_view(user: auth.User, video_id: str):
     view_count.process_view(video_id, user)
     return "OK"
+
 
 @app.route("/api/setprogress/<video_id>", methods=["POST"])
 # this route is only accessible to localhost, for ffmpeg to report back transcode progress

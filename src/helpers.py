@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import request
 
+
 # decorator to wrap a request function with, makes sure form data exists and is the right type
 def requires_form_data(values: dict[str, type]):
     def _requires_form_data(f):
@@ -19,6 +20,7 @@ def requires_form_data(values: dict[str, type]):
             return f(*args, **kwargs)
         return __requires_form_data
     return _requires_form_data
+
 
 def create_error(message: str):
     return { "error": { "message": message } }

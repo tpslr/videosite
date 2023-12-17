@@ -14,6 +14,7 @@ BASE_URL = environ.get("BASE_URL") or "http://localhost:5000"
 
 blueprint = Blueprint('videos', __name__)
 
+
 @blueprint.route("/api/video/<id>", methods=["DELETE"])
 @auth.requires_auth()
 def delete_video(user: auth.User, id: str):

@@ -28,14 +28,18 @@ if not IS_DEV:
 
 db: SQLAlchemy = None
 
+
 @dataclass
 class TranscodeProgress:
     owner: int
     title: str
     duration: float
     progress: float
+
+
 # dictionary from video id to transcode progress
 transcode_progresses: dict[str, TranscodeProgress] = {}
+
 
 def handle_upload(owner: int):
     if 'file' not in request.files:
@@ -74,6 +78,7 @@ def cleanup_failed(video_id: str):
     # remove the entire folder created for the video
     if os.path.exists(path):
         rmtree(os.path.join(VIDEO_FOLDER, video_id))
+
 
 def is_valid_video(file_path: str):
     try:
@@ -116,6 +121,7 @@ def transcode(owner: int, video_id: str, file_name: str, title: str):
     )
     return video_duration
 
+
 # ran after transcoding video
 def after_transcode(video_id: str):
     try:
@@ -142,6 +148,7 @@ def get_video_duration(file_path: str):
         # .mkv and some other types don't have stream duration so have to check format duration
         return float(subprocess.check_output(["ffprobe", "-select_streams", "v:0", "-show_entries", "format=duration", "-of", "csv=p=0", "-v", "error", file_path], stderr=subprocess.PIPE))
 
+
 def get_transcode_progress(video_id: str):
     transcode_progress = None
     if IS_DEV:
@@ -164,6 +171,7 @@ def get_transcode_progress(video_id: str):
             redis.delete(video_id)
 
     return { "progress": progress }
+
 
 def set_transcode_progress(video_id: str):
     # this should never happen, but just in case
@@ -202,14 +210,17 @@ def load_transcode_progress_redis(video_id: str):
     if not result: return None
     return TranscodeProgress(**json.loads(result))
 
+
 def save_transcode_progress_redis(video_id: str, transcode_progress: TranscodeProgress):
     redis.mset({ video_id: json.dumps(transcode_progress, cls=DataclassEncoder)})
+
 
 class DataclassEncoder(json.JSONEncoder):
     def default(self, o):
         if dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
         return super().default(o)
+
 
 def create_error(message: str):
     return { "error": message }
@@ -219,6 +230,7 @@ def create_error(message: str):
 def is_id_used(video_id):
     sql = text("SELECT 1 FROM videos WHERE id=:id")
     return bool(db.session.execute(sql, { "id": video_id }).fetchone())
+
 
 def generate_id():
     id = ""
