@@ -286,8 +286,10 @@ function allowDrag(e) {
         if (!upload.valid) return;
         upload.send();
     }
-    loadVideos(false);
-    loadVideos(true);
+    await loadVideos(false);
+    await loadVideos(true);
+
+    document.querySelector("div#loading-wrap").style.display = "none";
 
     const dropfile = document.getElementById('dropfile');
 
