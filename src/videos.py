@@ -59,6 +59,29 @@ def modify_video(user: auth.User, id: str):
     return "OK"
 
 
+@blueprint.route("/api/video/<video_id>/comment", methods=["POST"])
+@auth.requires_auth()
+@helpers.requires_form_data({ "content": str })
+def post_comment(user: auth.User, video_id: str):
+    sql = text("INSERT INTO comments (owner, video, content) VALUES (:owner, :video, :content)")
+    db.session.execute(sql, { "owner": user.uid, "video": video_id, "content": request.form.get("content") })
+    db.session.commit()
+
+    return "OK"
+
+
+@blueprint.route("/api/video/<video_id>/comments")
+@auth.requires_auth()
+def get_comments(user: auth.User, video_id: str):
+    sql = text("""SELECT U.username, C.content FROM comments C
+               JOIN users U on U.uid=C.owner
+               WHERE video=:video""")
+    comments = db.session.execute(sql, { "video": video_id }).mappings().fetchall()
+    comments = [dict(comment) for comment in comments]
+
+    return comments
+
+
 @blueprint.route("/api/videos")
 @auth.requires_auth()
 def list_videos(user: auth.User):
