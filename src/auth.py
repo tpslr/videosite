@@ -9,9 +9,9 @@ from secrets import token_urlsafe
 from enum import Enum
 from random_username.generate import generate_username
 from datetime import datetime, timedelta, timezone
-from os import environ
 from functools import wraps
 from redis import Redis
+from src.config import IS_DEV, ANONYMOUS_EXPIRY_DAYS, REFRESH_EXPIRY_DAYS
 
 db: SQLAlchemy = None
 
@@ -20,9 +20,6 @@ sessions: dict[str, Session] = {}
 
 user_cache: dict[int, User] = {}
 
-ANONYMOUS_EXPIRY_DAYS = float(environ.get("ANONYMOUS_EXPIRY_DAYS"))
-REFRESH_EXPIRY_DAYS = float(environ.get("REFRESH_EXPIRY_DAYS") or 30)
-IS_DEV = environ.get("ENVIRONMENT") == "dev"
 
 if not IS_DEV:
     redis = Redis()

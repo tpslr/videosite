@@ -11,14 +11,11 @@ import random
 import os
 from shutil import rmtree
 from redis import Redis
+from src.config import IS_DEV, VIDEO_FOLDER
 
 ID_CHARACTERS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'
 
-IS_DEV = os.getenv("ENVIRONMENT") == "dev"
 
-VIDEO_FOLDER = os.getenv("VIDEO_FOLDER")
-if not VIDEO_FOLDER:
-    raise ValueError("missing 'VIDEO_FOLDER' environment variable.")
 if not os.path.exists(VIDEO_FOLDER):
     os.mkdir(VIDEO_FOLDER)
 

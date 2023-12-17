@@ -1,26 +1,14 @@
-from dotenv import load_dotenv
-load_dotenv()
+from src import config
 from flask import Flask, request, make_response, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from src import file_upload, auth, view_count, helpers, videos
-from os import environ
+from src.config import SITE_NAME, BASE_URL, VIDEO_FOLDER, IS_DEV
 
-
-SITE_NAME = environ.get("SITE_NAME") or __name__
-BASE_URL = environ.get("BASE_URL") or "http://localhost:5000"
-VIDEO_FOLDER = environ.get("VIDEO_FOLDER")
 
 app = Flask(SITE_NAME)
-app.config["SQLALCHEMY_DATABASE_URI"] = environ.get("SQLALCHEMY_DATABASE_URI")
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {"pool_pre_ping": True}
-app.config["SESSION_COOKIE_NAME"] = "vvc"
-app.secret_key = environ.get("FLASK_SECRET_KEY")
 
-IS_DEV = environ.get("ENVIRONMENT") == "dev"
-
-# max content lenght to limit file uploads to 500mb
-app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024
+config.set_config(app)
 
 
 db = SQLAlchemy(app)

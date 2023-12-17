@@ -3,13 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Blueprint, request
 from sqlalchemy import text
 from src import auth, helpers
-from os import environ, path
+from os import path
 from shutil import rmtree
-from src.file_upload import VIDEO_FOLDER
+from src.config import VIDEO_FOLDER, BASE_URL
 
 db: SQLAlchemy = None
 
-BASE_URL = environ.get("BASE_URL") or "http://localhost:5000"
 
 blueprint = Blueprint('videos', __name__)
 
