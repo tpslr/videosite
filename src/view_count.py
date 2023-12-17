@@ -39,7 +39,7 @@ def process_view(video_id: str, user: User):
         # if view time is less than 5, ignore
         if float(request.headers["T"]) < 5:
             return
-    except:
+    except ValueError:
         return
     
     try:

@@ -14,7 +14,7 @@ def requires_form_data(values: dict[str, type]):
                 try:
                     # try to cast the value to the type specified (to confirm it can be done)
                     v_type(request.form[name])
-                except:
+                except ValueError:
                     return create_error(f"Form data is invalid, \"{name}\" should be \"{str(v_type)}\"")
 
             return f(*args, **kwargs)

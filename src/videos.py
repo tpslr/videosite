@@ -67,11 +67,11 @@ def list_videos(user: auth.User):
     offset = request.args["offset"] if "offset" in request.args else "0"
     try:
         limit = int(limit)
-    except:
+    except ValueError:
         return { "error": { "message": "missing arg limit" } }, 400
     try:
         offset = int(offset)
-    except:
+    except ValueError:
         return { "error": { "message": "missing arg offset" } }, 400
     
     if "public" in request.args:

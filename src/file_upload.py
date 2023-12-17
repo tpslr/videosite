@@ -86,7 +86,9 @@ def is_valid_video(file_path: str):
         codec_types = subprocess.check_output(["ffprobe", "-show_entries", "stream=codec_type", "-of", "csv=p=0", "-v", "error", file_path], stderr=subprocess.PIPE)
         # check if there is a video stream in the file
         return b"video" in codec_types.splitlines()
-    except:
+    except subprocess.CalledProcessError:
+        # subprocess.check_output will throw a CalledProcessError if ffprobe returns non-zero.
+        # Happens if ffprobe can't process the file at all (in which case it's rejected as not a valid video)
         return False
 
 
@@ -144,7 +146,7 @@ def after_transcode(video_id: str):
 def get_video_duration(file_path: str):
     try:
         return float(subprocess.check_output(["ffprobe", "-select_streams", "v:0", "-show_entries", "stream=duration", "-of", "csv=p=0", "-v", "error", file_path], stderr=subprocess.PIPE))
-    except:
+    except ValueError:
         # .mkv and some other types don't have stream duration so have to check format duration
         return float(subprocess.check_output(["ffprobe", "-select_streams", "v:0", "-show_entries", "format=duration", "-of", "csv=p=0", "-v", "error", file_path], stderr=subprocess.PIPE))
 
