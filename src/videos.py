@@ -75,17 +75,18 @@ def list_videos(user: auth.User):
         return { "error": { "message": "missing arg offset" } }, 400
     
     if "public" in request.args:
-        sql = text("SELECT id, views, duration, title, owner FROM videos WHERE owner!=:owner AND private=false ORDER BY upload_date DESC LIMIT(:limit) OFFSET(:offset*:limit);")
+        sql = text("""SELECT V.id, V.views, V.duration, V.title, U.username AS owner FROM videos V
+                   JOIN users U ON U.uid=V.owner
+                   WHERE V.owner!=:owner AND V.private=false
+                   ORDER BY V.upload_date DESC
+                   LIMIT(:limit) OFFSET(:offset*:limit);""")
     else:
-        sql = text("SELECT id, views, duration, title, private FROM videos WHERE owner=:owner ORDER BY upload_date DESC LIMIT(:limit) OFFSET(:offset*:limit);")
+        sql = text("""SELECT id, views, duration, title, private
+                   FROM videos WHERE owner=:owner
+                   ORDER BY upload_date DESC
+                   LIMIT(:limit) OFFSET(:offset*:limit);""")
     videos = db.session.execute(sql, { "owner": user.uid, "limit": limit, "offset": offset }).mappings().fetchall()
     videos = [dict(video) for video in videos]
-
-    if "public" in request.args:
-        # if requesting public videos, replace owner uid with owner username
-        for video in videos:
-            if "owner" in video:
-                video["owner"] = auth.get_user(video["owner"]).username
 
     return { "base_url": BASE_URL, "videos": list(videos) }
 
