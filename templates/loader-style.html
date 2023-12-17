@@ -1,0 +1,96 @@
+<style>
+    div.loader {
+        position: absolute;
+        width: 100px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    div.loader.loader-no {
+        position: relative;
+        width: 100px;
+        margin: auto;
+        top: unset;
+        left: unset;
+        transform: unset;
+    }
+    div.loader > div {
+        position: relative;
+        margin: 0px auto;
+        width: 100%;
+    }
+    div.loader > div:before {
+        content: '';
+        display: block;
+        padding-top: 100%;
+    }
+    div.loader > div > svg {
+        -webkit-animation: loader-rotate 2s linear infinite;
+        animation: loader-rotate 2s linear infinite;
+        height: 100%;
+        -webkit-transform-origin: center center;
+        -ms-transform-origin: center center;
+        transform-origin: center center;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+    div.loader > div > svg > circle {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+        stroke-width: 3;
+        fill: none;
+        -webkit-animation: loader-dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+        animation: loader-dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+        stroke-linecap: round;
+        stroke: #6131d1;
+    }
+    @-webkit-keyframes 
+    loader-rotate {
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes 
+    loader-rotate {
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+    @-webkit-keyframes 
+    loader-dash {
+        0% {
+            stroke-dasharray: 1, 200;
+            stroke-dashoffset: 0;
+        }
+        50% {
+            stroke-dasharray: 89, 200;
+            stroke-dashoffset: -35;
+        }
+        100% {
+            stroke-dasharray: 89, 200;
+            stroke-dashoffset: -124;
+        }
+    }
+    @keyframes 
+    loader-dash {
+        0% {
+            stroke-dasharray: 1, 200;
+            stroke-dashoffset: 0;
+        }
+        50% {
+            stroke-dasharray: 89, 200;
+            stroke-dashoffset: -35;
+        }
+        100% {
+            stroke-dasharray: 89, 200;
+            stroke-dashoffset: -124;
+        }
+    }
+</style>

@@ -4,6 +4,12 @@
     {% include "head-meta.html" %}
     <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet">
     <script defer src="{{ url_for('static', filename='index.js') }}"></script>
+    <style>
+        div#loading-wrap {
+            padding-top: 100px;
+        }
+    </style>
+    {% include "loader-style.html" %}
 </head>
 <body>
     {% include "header.html" %}
@@ -34,6 +40,9 @@
     <section id="public-videos" class="videos">
 
     </section>
+    <div id="loading-wrap">
+        <div class="loader loader-no"><div><svg viewBox="25 25 50 50"><circle cx="50" cy="50" r="20"></circle></svg></div></div>
+    </div>
     <div id="dropfile">
         <div class="center largetext">Drop here.</div>
     </div>
