@@ -39,7 +39,7 @@ def process_view(video_id: str, user: User):
         # if view time is less than 5, ignore
         if float(request.headers["T"]) < 5:
             return
-    except: 
+    except:
         return
     
     try:
@@ -54,7 +54,7 @@ def process_view(video_id: str, user: User):
             db.session.execute(sql, { "video_id": video_id, })
         else:
             # user has viewed the video before
-            sql = text("UPDATE views SET count=count+1 WHERE video_id=:video_id AND user_id=:user_id;")    
+            sql = text("UPDATE views SET count=count+1 WHERE video_id=:video_id AND user_id=:user_id;")
             db.session.execute(sql, { "video_id": video_id, "user_id": user.uid })
         
         db.session.commit()

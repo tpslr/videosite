@@ -66,7 +66,7 @@ def handle_upload(owner: int):
         return create_error("File is not a valid video")
 
     # transcode the video
-    # transcoding is important, as it saves space on the server by compressing files, 
+    # transcoding is important, as it saves space on the server by compressing files,
     # and since the transcoded video is generated on the server, it should get rid of any trickery with the video metadata
     video_duration = transcode(owner, video_id, file_name, file.filename)
 
@@ -163,7 +163,7 @@ def get_transcode_progress(video_id: str):
     progress = transcode_progress.progress / transcode_progress.duration * 100
 
     # if the progress is 100%, remove it from the transcode_progresses dict, since it's not needed anymore
-    # yes I know doing like this could cause a tiny memory leak if the client never requests the progress 
+    # yes I know doing like this could cause a tiny memory leak if the client never requests the progress
     if progress == 100:
         if IS_DEV:
             transcode_progresses.pop(video_id)

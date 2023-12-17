@@ -116,9 +116,9 @@ def video_player(video_id: str):
     
     view_count.begin_view(video_id)
     
-    return render_template("player.html", 
+    return render_template("player.html",
                            header_title=SITE_NAME,
-                           title=video["title"], 
+                           title=video["title"],
                            views=video["views"],
                            video_url=f"{BASE_URL}/video_data/{video_id}/compressed.mp4",
                            thumbnail_url=f"{BASE_URL}/video_data/{video_id}/thumbnail.png")
