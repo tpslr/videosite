@@ -22,18 +22,20 @@ Asennusohjeet paikallista testausta varten löytyvät tiedostosta [installation.
 * Videot katsottavissa
 * Lista videoista näkyy
 * Sivua voi käyttää kirjautumatta
-* Käyttäjän luonti (linkki siihen puuttuu vielä)
+* Käyttäjän luonti
 * Kirjautuminen
 * Yksityiset videot
 * Videoiden poistaminen
+* Kommentit
 
 
 ## Puuttuvat ominaisuudet
-* Tykkäykset ja kommentit
+* Tykkäykset
 * Ylläpitäjät
 * Videoiden reportit
 
 
 ## Ongelmat
-* käyttöliittymässä jotkin napit ja muut eivät toimi oikein
 * käyttöliittymä näyttää hirveältä vaalealla teemalla
+* jotkin uusimmista toiminnoista eivät anna mitään visuaalista palautetta, että mitään olisi tapahtumassa (videon asettaminen yksityiseksi, kommentin lähettäminen)
+* videon katsomisen UI on surkea
