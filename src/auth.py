@@ -264,7 +264,7 @@ def convert_anonymous_user(username: str, password: str, refresh_token: str):
         return user
 
     if user.type != UserType.anonymous:
-        return AuthError(f"Tried to convert a non-anonymous user")
+        return AuthError("Tried to convert a non-anonymous user")
 
     if user.username != username:
         # make sure the username is free (only when it's not what it originally was)

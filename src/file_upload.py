@@ -106,17 +106,17 @@ def transcode(owner: int, video_id: str, file_name: str, title: str):
     else:
         save_transcode_progress_redis(video_id, transcode_progress)
 
-    ( # transcode video, reporting progress to http://localhost:5000/setprogress/{video_id}
+    (  # transcode video, reporting progress to http://localhost:5000/setprogress/{video_id}
         ffmpeg.input(input_video)
         .output(output_video, maxrate="1500k", progress=f"http://localhost:5000/api/setprogress/{video_id}", movflags="faststart")
         .run_async(overwrite_output=True, quiet=True)
     )
-    ( # generate thumbnail
+    (  # generate thumbnail
         ffmpeg.input(input_video)
         .output(output_thumbnail, vf="thumbnail", frames=1)
         .run_async(overwrite_output=True, quiet=True)
     )
-    ( # generate low resolution thumbnail
+    (  # generate low resolution thumbnail
         ffmpeg.input(input_video)
         .output(output_thumbnail_lowres, vf="thumbnail", s="376x222", frames=1)
         .run(overwrite_output=True, quiet=True)
@@ -190,7 +190,8 @@ def set_transcode_progress(video_id: str):
         # this is because ffmpeg reports progress in a single http request using a chunked transfer
         line = request.stream.readline().decode(request.content_encoding or "utf-8").strip("\n\r ")
         # if the line is len() == 0 or "progress=end", stop reading
-        if len(line) == 0 or line == "progress=end": break
+        if len(line) == 0 or line == "progress=end":
+            break
 
         if line.startswith("out_time_us="):
             microseconds = float(line.split("=")[1])
@@ -209,7 +210,8 @@ def set_transcode_progress(video_id: str):
 
 def load_transcode_progress_redis(video_id: str):
     result = redis.get(video_id)
-    if not result: return None
+    if not result:
+        return None
     return TranscodeProgress(**json.loads(result))
 
 
