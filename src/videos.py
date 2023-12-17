@@ -2,7 +2,6 @@ from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
 from flask import Blueprint, request
 from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
 from src import auth, helpers
 from os import environ, path
 from shutil import rmtree
