@@ -11,39 +11,44 @@
     <meta name="theme-color" content="#101020">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='player.css') }}">
+    <script src="{{ url_for('static', filename='player.js') }}"></script>
     <style>
         body {
             background-color: #101020;
             font-family: 'Open Sans', sans-serif;
             color: whitesmoke;
         }
-        div.center {
-            margin: 20px auto 0px auto;
+        div.videowrap {
+            margin: 20px auto 0px 20px;
             width: fit-content;
         }
-    </style>
-    <script>
-        async function onLoad() {
-            const video = document.querySelector("video");
-            let lastT = 0;
-            while (true) {
-                let t = 0;
-                for (let i = 0; i < video.played.length; i++) {
-                    t += video.played.end(i) - video.played.start(i);
-                }
-                if (t != lastT) await fetch(document.location.href + "/view", { headers: { "T": t } });
-                lastT = t;
-                await new Promise(resolve => setTimeout(resolve, 4000));
-            }
+        video {
+            position: relative;
+            max-height: 70%;
+            max-width: 70%;
         }
-    </script>
+    </style>
 </head>
 <body onload="onLoad();">
     {% include "header.html" %}
-    <div class="center">
-        <video src="{{ video_url }}" poster="{{ thumbnail_url }}" controls style="width: 800px;"></video>
+    <div class="videowrap">
+        <video src="{{ video_url }}" poster="{{ thumbnail_url }}" controls></video>
         <h2 style="position: relative; margin: 10px;">{{ title }}</h2>
         <span style="margin-left: 10px;">{{ views }} views</span>
     </div>
+    <div id="comments">
+        <h3 id="comments-title">Comments</h3>
+        <div class="commentbox">
+            <div class="input"><input id="comment" type="comment" placeholder="Write a comment"></div>
+            <button class="post-comment" onclick="postComment()">Post comment</button>
+        </div>
+    </div>
+    <template id="comment">
+        <div class="comment">
+            <div class="user"></div>
+            <div class="content"></div>
+        </div>
+    </template>
 </body>
 </html>
