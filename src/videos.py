@@ -19,13 +19,13 @@ blueprint = Blueprint('videos', __name__)
 def delete_video(user: auth.User, id: str):
     if not is_owner(id, user):
         return helpers.create_error("You don't own this video"), 403
-    
+
     sql = text("DELETE FROM videos WHERE id=:id")
     db.session.execute(sql, { "id": id })
-    
+
     sql = text("DELETE FROM views WHERE video_id=:id")
     db.session.execute(sql, { "id": id })
-    
+
     # remove the entire folder created for the video
     video_data_path = path.join(VIDEO_FOLDER, id)
     if path.exists(video_data_path):
@@ -48,7 +48,7 @@ class VideoUpdateAction(str, Enum):
 def modify_video(user: auth.User, id: str):
     if not is_owner(id, user):
         return helpers.create_error("You don't own this video"), 403
-    
+
     match request.form.get("action"):
         case VideoUpdateAction.set_private:
             set_private(id, True)
@@ -56,7 +56,7 @@ def modify_video(user: auth.User, id: str):
             set_private(id, False)
         case VideoUpdateAction.set_title:
             return helpers.create_error("Changing title is not implemented yet"), 501
-    
+
     return "OK"
 
 
@@ -73,7 +73,7 @@ def list_videos(user: auth.User):
         offset = int(offset)
     except ValueError:
         return { "error": { "message": "missing arg offset" } }, 400
-    
+
     if "public" in request.args:
         sql = text("""SELECT V.id, V.views, V.duration, V.title, U.username AS owner FROM videos V
                    JOIN users U ON U.uid=V.owner

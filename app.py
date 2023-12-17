@@ -55,11 +55,11 @@ def get_session():
     session = auth.get_session(refresh_token)
     if type(session) is auth.AuthError:
         return { "error": session }, 401
-    
+
     body = { "user": session.user }
     if session.refresh:
         body["refresh"] = session.refresh
-    
+
     response = make_response(body)
     response.set_cookie("session", session.session_token, secure=not IS_DEV, httponly=True, samesite="Strict")
     return response
@@ -69,10 +69,10 @@ def get_session():
 @helpers.requires_form_data({ "username": str, "password": str })
 def login():
     refresh = auth.login_normal(request.form["username"], request.form["password"])
-    
+
     if type(refresh) is auth.AuthError:
         return { "error": refresh }
-    
+
     return { "refresh": refresh }
 
 
@@ -87,7 +87,7 @@ def signup():
 
     if type(refresh) is auth.AuthError:
         return { "error": refresh }
-    
+
     return { "refresh": refresh }
 
 
@@ -113,9 +113,9 @@ def video_player(video_id: str):
     video = db.session.execute(sql, { "id": video_id }).mappings().fetchone()
     if not video:
         return "Not Found", 404
-    
+
     view_count.begin_view(video_id)
-    
+
     return render_template("player.html",
                            header_title=SITE_NAME,
                            title=video["title"],

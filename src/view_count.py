@@ -26,22 +26,22 @@ def process_view(video_id: str, user: User):
         view["w"] = True
         session.update(v=view)
         return
-    
+
     # if time from begin_view is less than 10 seconds, ignore
     if view["t"] > datetime.now().timestamp() - 10:
         return
-    
+
     # if view time missing from request headers, ignore
     if "T" not in request.headers:
         return
-    
+
     try:
         # if view time is less than 5, ignore
         if float(request.headers["T"]) < 5:
             return
     except ValueError:
         return
-    
+
     try:
         sql = text("SELECT count FROM views WHERE video_id=:video_id AND user_id=:user_id;")
         response = db.session.execute(sql, { "video_id": video_id, "user_id": user.uid }).fetchone()
@@ -56,7 +56,7 @@ def process_view(video_id: str, user: User):
             # user has viewed the video before
             sql = text("UPDATE views SET count=count+1 WHERE video_id=:video_id AND user_id=:user_id;")
             db.session.execute(sql, { "video_id": video_id, "user_id": user.uid })
-        
+
         db.session.commit()
 
         # remove view from session

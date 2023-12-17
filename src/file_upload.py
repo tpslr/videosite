@@ -47,11 +47,11 @@ def handle_upload(owner: int):
     file = request.files['file']
     if not file.filename:
         return create_error("Cannot accept unnamed file"), 400
-    
+
     file_extension = file.filename.rsplit('.', 1)[1]
-    
+
     video_id = generate_id()
-    
+
     os.mkdir(os.path.join(VIDEO_FOLDER, video_id))
 
     # file names only include extensions in dev env
@@ -105,7 +105,7 @@ def transcode(owner: int, video_id: str, file_name: str, title: str):
         transcode_progresses[video_id] = transcode_progress
     else:
         save_transcode_progress_redis(video_id, transcode_progress)
-    
+
     ( # transcode video, reporting progress to http://localhost:5000/setprogress/{video_id}
         ffmpeg.input(input_video)
         .output(output_video, maxrate="1500k", progress=f"http://localhost:5000/api/setprogress/{video_id}", movflags="faststart")
@@ -157,7 +157,7 @@ def get_transcode_progress(video_id: str):
         transcode_progress = transcode_progresses[video_id]
     else:
         transcode_progress = load_transcode_progress_redis(video_id)
-    
+
     if not transcode_progress:
         return create_error(f"No progress for video: \"{video_id}\"")
 
@@ -197,7 +197,7 @@ def set_transcode_progress(video_id: str):
             transcode_progress.progress = microseconds / 1000000
             if not IS_DEV:
                 save_transcode_progress_redis(video_id, transcode_progress)
-    
+
     after_transcode(video_id)
 
     # make sure the progress ends up at 100 (in case of rounding errors, etc.)

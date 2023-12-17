@@ -70,7 +70,7 @@ def requires_auth():
         def __requires_auth(*args, **kwargs):
             if "session" not in request.cookies:
                 return "Unauthorized", 401
-            
+
             session_token = request.cookies.get("session")
 
             if session_token not in sessions:
@@ -80,7 +80,7 @@ def requires_auth():
             # checks the session token for validity
             if session_token not in sessions:
                 return "Unauthorized", 401
-            
+
             user = sessions[session_token].user
             # call the function this decorator is on
             return f(user, *args, **kwargs)
@@ -109,11 +109,11 @@ def get_session(refresh_token):
         # only anonymous sessions return refresh token with get_session
         session.refresh = login_anonymous(user)
         return session
-    
+
     user = user_from_refresh(refresh_token)
     if type(user) is AuthError:
         return user
-    
+
     session = create_session(user)
 
     return session
@@ -150,11 +150,11 @@ def get_user(uid: int):
 
     if uid in user_cache:
         return user_cache[uid]
-    
+
     user_data = db.session.execute(text("SELECT type, username FROM users WHERE uid=:uid;"), { "uid": uid }).mappings().fetchone()
     if not user_data:
         return None
-    
+
     user = User(uid, user_data["type"], user_data["username"])
     user_cache[uid] = user
     return user
@@ -167,12 +167,12 @@ def user_from_refresh(refresh_token: str):
     if not result or len(result) < 1:
         # if no result was returned from the db, this means the refresh token didn't exist
         return AuthError("Invalid refresh token.")
-    
+
     user = get_user(result[0])
     if not user:
         # this should never happen, if the session was valid the user should also be valid
         return AuthError("User not found.")
-    
+
     return user
 
 
@@ -180,7 +180,7 @@ def user_from_refresh(refresh_token: str):
 def login_anonymous(user: User):
     if user.type != UserType.anonymous:
         raise ValueError("Tried to anonymous login a non-anonymous user.")
-    
+
     return generate_refresh(user, ANONYMOUS_EXPIRY_DAYS)
 
 
@@ -190,17 +190,17 @@ def login_normal(username: str, password: str):
 
     if not result:
         return AuthError("Incorrect username", True)
-    
+
     [uid, pw_hash] = result
-    
+
     user = get_user(uid)
 
     if user.type == UserType.anonymous:
         return AuthError("Tried to login as an anonymous user")
-    
+
     if not bcrypt.checkpw(password.encode("utf-8"), pw_hash.encode("utf-8")):
         return AuthError("Incorrect password", True)
-    
+
     return generate_refresh(user, REFRESH_EXPIRY_DAYS)
 
 
@@ -220,7 +220,7 @@ def create_anonymous_user():
     # generate a random username and check that it's free
     while not username or not username_free(username):
         username = generate_username()[0]
-    
+
     uid = db.session.execute(text("INSERT INTO users (type, username) VALUES ('anonymous', :username) RETURNING uid;"), { "username": username }).fetchone()[0]
     db.session.commit()
 
@@ -234,13 +234,13 @@ def create_normal_user(username: str, password: str):
         return AuthError("Username too short", True)
     if len(password) < 6:
         return AuthError("Password too short", True)
-    
+
     # make sure the username is free
     if not username_free(username):
         return AuthError("Username taken", True)
-    
+
     hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
-    
+
     sql = text("INSERT INTO users (type, username, password) VALUES ('normal', :username, :password) RETURNING uid;")
     uid = db.session.execute(sql, { "username": username, "password": hash.decode("utf-8") }).fetchone()[0]
     db.session.commit()
@@ -257,12 +257,12 @@ def convert_anonymous_user(username: str, password: str, refresh_token: str):
         return AuthError("Username too short", True)
     if len(password) < 6:
         return AuthError("Password too short", True)
-    
+
     user = user_from_refresh(refresh_token)
     if type(user) is AuthError:
         # AuthError while finding anonymous user
         return user
-    
+
     if user.type != UserType.anonymous:
         return AuthError(f"Tried to convert a non-anonymous user")
 
@@ -272,7 +272,7 @@ def convert_anonymous_user(username: str, password: str, refresh_token: str):
             return AuthError("Username taken", True)
 
     hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
-    
+
     # save changes to db
     sql = text("UPDATE users SET type='normal', username=:username, password=:password WHERE uid=:uid;")
     db.session.execute(sql, { "uid": user.uid, "username": username, "password": hash.decode("utf-8") })
@@ -285,5 +285,5 @@ def convert_anonymous_user(username: str, password: str, refresh_token: str):
     if not IS_DEV:
         # tell all the other workers this users cached data has expired
         redis.publish("usercache-expire", user.uid)
-    
+
     return generate_refresh(user, REFRESH_EXPIRY_DAYS)
