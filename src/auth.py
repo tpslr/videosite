@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 import bcrypt
-from flask import request, session
+from flask import request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from secrets import token_urlsafe
