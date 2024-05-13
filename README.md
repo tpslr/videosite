@@ -1,3 +1,11 @@
+# videosite
+Databases and web programming uni course project.
+
+Users can quickly upload a video and share the link with others.
+
+A test page should be running at [videosite.topias.xyz](https://videosite.topias.xyz), for installation instructions, see [installation.md](installation.md).
+
+
 # Videonjakosivu
 
 Sivulle voi nopeasti ladata videon, ja jakaa videon linkin jonnekkin, jolla muut voivat katsoa sen
